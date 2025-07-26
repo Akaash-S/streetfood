@@ -27,7 +27,23 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      const userCredential = await signIn(email, password);
+      const idToken = await userCredential.user.getIdToken();
+      
+      // Call backend login endpoint to ensure user exists in database
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+
       // Refresh user data to trigger redirect
       await refreshUser();
       toast({

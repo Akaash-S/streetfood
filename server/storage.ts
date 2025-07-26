@@ -50,8 +50,8 @@ export class MemStorage implements IStorage {
   private seedData() {
     // Seed some sample data for demonstration
     const sampleShops = [
-      { id: "shop1", name: "Fresh Mart Supplies", description: "Quality groceries and fresh produce", location: "Downtown Market", ownerId: "owner1", rating: 4.8, isActive: true, createdAt: new Date(), updatedAt: new Date() },
-      { id: "shop2", name: "Quality Food Store", description: "Premium ingredients for food vendors", location: "Central Plaza", ownerId: "owner2", rating: 4.6, isActive: true, createdAt: new Date(), updatedAt: new Date() }
+      { id: "shop1", shopName: "Fresh Mart Supplies", address: "Downtown Market", ownerId: "owner1", phone: "+1-555-0101", isActive: true, averageRating: "4.8", createdAt: new Date(), updatedAt: new Date() },
+      { id: "shop2", shopName: "Quality Food Store", address: "Central Plaza", ownerId: "owner2", phone: "+1-555-0102", isActive: true, averageRating: "4.6", createdAt: new Date(), updatedAt: new Date() }
     ];
 
     const sampleProducts = [

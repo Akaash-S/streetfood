@@ -31,17 +31,27 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
 
     const token = authHeader.split('Bearer ')[1];
     
-    // Simple token validation - in production this should verify with Firebase
-    // For now, we'll extract user info from the token payload
+    // Verify token with Firebase Admin SDK
     try {
-      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-      req.user = { 
-        uid: payload.user_id || payload.sub || payload.uid,
-        email: payload.email 
-      };
-      return next();
+      if (admin.apps.length > 0) {
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        req.user = decodedToken;
+        return next();
+      } else {
+        // Fallback for development: decode token payload
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          throw new Error('Invalid token format');
+        }
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+        req.user = { 
+          uid: payload.user_id || payload.sub || payload.uid,
+          email: payload.email 
+        } as any;
+        return next();
+      }
     } catch (error) {
-      console.error('Token decode failed:', error);
+      console.error('Token verification failed:', error);
       return res.status(401).json({ message: 'Invalid token' });
     }
   } catch (error) {
