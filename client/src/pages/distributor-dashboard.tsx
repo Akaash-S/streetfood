@@ -297,6 +297,11 @@ export default function DistributorDashboard() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Welcome back, <span className="font-medium text-blue-600 dark:text-blue-400">{dbUser.firstName}</span>
                 </p>
+                {dbUser.shopName && (
+                  <p className="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md inline-block mt-1">
+                    {dbUser.shopName}
+                  </p>
+                )}
               </div>
             </motion.div>
             <motion.div

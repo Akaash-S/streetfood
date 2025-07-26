@@ -1,0 +1,344 @@
+{
+  "users": {
+    "7f8a9d61-673a-44d5-aa70-7ebd806e01b5": {
+      "id": "7f8a9d61-673a-44d5-aa70-7ebd806e01b5",
+      "firebaseUid": "vendor-dev-uid",
+      "email": "vendor@example.com",
+      "firstName": "Mike",
+      "lastName": "Rodriguez",
+      "phone": "+1-555-0103",
+      "role": "vendor",
+      "shopName": null,
+      "createdAt": "2025-07-26T15:41:03.097Z",
+      "updatedAt": "2025-07-26T15:41:03.097Z"
+    },
+    "owner1": {
+      "id": "owner1",
+      "firebaseUid": "shop-owner-uid",
+      "email": "owner@example.com",
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "phone": "+1-555-0102",
+      "role": "shop_owner",
+      "shopName": null,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "owner2": {
+      "id": "owner2",
+      "firebaseUid": "shop-owner-uid-2",
+      "email": "owner2@example.com",
+      "firstName": "Carlos",
+      "lastName": "Martinez",
+      "phone": "+1-555-0104",
+      "role": "shop_owner",
+      "shopName": null,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "c32a7094-f768-41fc-b283-ece9933366f2": {
+      "id": "c32a7094-f768-41fc-b283-ece9933366f2",
+      "firebaseUid": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "email": "distributor@premiumfood.com",
+      "firstName": "David",
+      "lastName": "Smith",
+      "phone": "+1-555-0101",
+      "role": "distributor",
+      "shopName": "Premium Food Distributors Inc.",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "1fa4cad7-5ed5-47d9-bfca-8368c975b816": {
+      "firebaseUid": "VaXwtbGovPdyUru0BCvQcvIqJeM2",
+      "email": "ve@example.com",
+      "firstName": "ve",
+      "lastName": "ve",
+      "phone": "+91 7788995566",
+      "role": "vendor",
+      "id": "1fa4cad7-5ed5-47d9-bfca-8368c975b816",
+      "shopName": null,
+      "createdAt": "2025-07-26T15:45:55.801Z",
+      "updatedAt": "2025-07-26T15:45:55.801Z"
+    }
+  },
+  "shops": {
+    "shop1": {
+      "id": "shop1",
+      "shopName": "Fresh Mart Supplies",
+      "address": "Downtown Market",
+      "ownerId": "owner1",
+      "phone": "+1-555-0101",
+      "isActive": true,
+      "averageRating": "4.8",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "shop2": {
+      "id": "shop2",
+      "shopName": "Quality Food Store",
+      "address": "Central Plaza",
+      "ownerId": "owner2",
+      "phone": "+1-555-0102",
+      "isActive": true,
+      "averageRating": "4.6",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  },
+  "products": {
+    "prod1": {
+      "id": "prod1",
+      "shopId": "shop1",
+      "name": "Fresh Tomatoes",
+      "description": "Organic red tomatoes perfect for street food",
+      "price": 3.5,
+      "stockQuantity": 100,
+      "unit": "kg",
+      "isActive": true,
+      "shopName": "Fresh Mart Supplies",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod2": {
+      "id": "prod2",
+      "shopId": "shop1",
+      "name": "Premium Rice",
+      "description": "Basmati rice 5kg bag",
+      "price": 12.99,
+      "stockQuantity": 50,
+      "unit": "bags",
+      "isActive": true,
+      "shopName": "Fresh Mart Supplies",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod3": {
+      "id": "prod3",
+      "shopId": "shop1",
+      "name": "Onions",
+      "description": "Fresh yellow onions",
+      "price": 2.25,
+      "stockQuantity": 80,
+      "unit": "kg",
+      "isActive": true,
+      "shopName": "Fresh Mart Supplies",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod4": {
+      "id": "prod4",
+      "shopId": "shop1",
+      "name": "Bell Peppers",
+      "description": "Mixed color bell peppers",
+      "price": 4.5,
+      "stockQuantity": 60,
+      "unit": "kg",
+      "isActive": true,
+      "shopName": "Fresh Mart Supplies",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod5": {
+      "id": "prod5",
+      "shopId": "shop2",
+      "name": "Cooking Oil",
+      "description": "Sunflower oil 1L bottle",
+      "price": 4.25,
+      "stockQuantity": 75,
+      "unit": "bottles",
+      "isActive": true,
+      "shopName": "Quality Food Store",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod6": {
+      "id": "prod6",
+      "shopId": "shop2",
+      "name": "Chicken Breast",
+      "description": "Fresh chicken breast fillets",
+      "price": 8.99,
+      "stockQuantity": 25,
+      "unit": "kg",
+      "isActive": true,
+      "shopName": "Quality Food Store",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod7": {
+      "id": "prod7",
+      "shopId": "shop2",
+      "name": "Bread Rolls",
+      "description": "Fresh hamburger buns",
+      "price": 1.99,
+      "stockQuantity": 120,
+      "unit": "packs",
+      "isActive": true,
+      "shopName": "Quality Food Store",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "prod8": {
+      "id": "prod8",
+      "shopId": "shop2",
+      "name": "Cheese Slices",
+      "description": "Processed cheese slices",
+      "price": 3.49,
+      "stockQuantity": 40,
+      "unit": "packs",
+      "isActive": true,
+      "shopName": "Quality Food Store",
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  },
+  "orders": {
+    "order1": {
+      "id": "order1",
+      "vendorId": "test123",
+      "shopId": "shop1",
+      "orderNumber": "#12345",
+      "status": "delivered",
+      "total": 234.5,
+      "items": [
+        {
+          "productId": "prod1",
+          "quantity": 20,
+          "price": 3.5
+        }
+      ],
+      "createdAt": "2024-12-15T00:00:00.000Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "order2": {
+      "id": "order2",
+      "vendorId": "test123",
+      "shopId": "shop2",
+      "orderNumber": "#12344",
+      "status": "in_transit",
+      "total": 189.25,
+      "items": [
+        {
+          "productId": "prod3",
+          "quantity": 10,
+          "price": 4.25
+        }
+      ],
+      "createdAt": "2024-12-14T00:00:00.000Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  },
+  "deliveryRequests": {
+    "del1": {
+      "id": "del1",
+      "orderId": "order2",
+      "route": "Quality Food Store → John's Food Cart",
+      "distance": "1.8 km",
+      "estimatedTime": "12 mins",
+      "fee": 9.75,
+      "status": "available",
+      "agentId": null,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  },
+  "wholesaleProducts": {
+    "wp1": {
+      "id": "wp1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Premium Basmati Rice (25kg)",
+      "description": "High-quality basmati rice for bulk orders",
+      "category": "Grains",
+      "price": 45.99,
+      "stockQuantity": 150,
+      "unit": "bags",
+      "minimumOrderQuantity": 5,
+      "isActive": true,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "wp2": {
+      "id": "wp2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Cooking Oil Bulk Pack (20L)",
+      "description": "Premium cooking oil in bulk packaging",
+      "category": "Oils",
+      "price": 89.99,
+      "stockQuantity": 75,
+      "unit": "containers",
+      "minimumOrderQuantity": 2,
+      "isActive": true,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "wp3": {
+      "id": "wp3",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Fresh Vegetables Mix (50kg)",
+      "description": "Mixed seasonal vegetables in bulk",
+      "category": "Vegetables",
+      "price": 125.5,
+      "stockQuantity": 30,
+      "unit": "boxes",
+      "minimumOrderQuantity": 1,
+      "isActive": true,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  },
+  "bulkOrders": {
+    "bo1": {
+      "id": "bo1",
+      "shopId": "shop1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "orderNumber": "#BLK-12345",
+      "status": "processing",
+      "totalAmount": 2450,
+      "deliveryAddress": "Downtown Market",
+      "estimatedDeliveryDate": "2025-01-17T00:00:00.000Z",
+      "notes": "Urgent delivery needed",
+      "createdAt": "2025-01-15T00:00:00.000Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "bo2": {
+      "id": "bo2",
+      "shopId": "shop2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "orderNumber": "#BLK-12346",
+      "status": "shipped",
+      "totalAmount": 1890.75,
+      "deliveryAddress": "Central Plaza",
+      "estimatedDeliveryDate": "2025-01-16T00:00:00.000Z",
+      "notes": "",
+      "createdAt": "2025-01-14T00:00:00.000Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  },
+  "shopDeliveries": {
+    "sd1": {
+      "id": "sd1",
+      "orderId": "bo1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "shopId": "shop1",
+      "driverId": null,
+      "vehicleNumber": "TRK-001",
+      "status": "scheduled",
+      "scheduledDate": "2025-01-17T00:00:00.000Z",
+      "deliveredDate": null,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    },
+    "sd2": {
+      "id": "sd2",
+      "orderId": "bo2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "shopId": "shop2",
+      "driverId": null,
+      "vehicleNumber": "TRK-002",
+      "status": "in_transit",
+      "scheduledDate": "2025-01-16T00:00:00.000Z",
+      "deliveredDate": null,
+      "createdAt": "2025-07-26T15:41:03.098Z",
+      "updatedAt": "2025-07-26T15:41:03.098Z"
+    }
+  }
+}
