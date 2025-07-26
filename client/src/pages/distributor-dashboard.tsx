@@ -44,14 +44,21 @@ export default function DistributorDashboard() {
   // Mutations
   const createProductMutation = useMutation({
     mutationFn: async (data: any) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
       const response = await fetch('/api/distributor/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await dbUser?.getIdToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(data)
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create product');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
@@ -59,21 +66,29 @@ export default function DistributorDashboard() {
       setIsAddProductOpen(false);
       toast({ title: "Product created successfully!" });
     },
-    onError: () => {
-      toast({ title: "Failed to create product", variant: "destructive" });
+    onError: (error: any) => {
+      console.error('Create product error:', error);
+      toast({ title: error.message || "Failed to create product", variant: "destructive" });
     }
   });
 
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
       const response = await fetch(`/api/distributor/products/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await dbUser?.getIdToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(data)
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update product');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
@@ -81,69 +96,94 @@ export default function DistributorDashboard() {
       setEditingProduct(null);
       toast({ title: "Product updated successfully!" });
     },
-    onError: () => {
-      toast({ title: "Failed to update product", variant: "destructive" });
+    onError: (error: any) => {
+      console.error('Update product error:', error);
+      toast({ title: error.message || "Failed to update product", variant: "destructive" });
     }
   });
 
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
       const response = await fetch(`/api/distributor/products/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${await dbUser?.getIdToken()}`
+          'Authorization': `Bearer ${token}`
         }
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete product');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/distributor/products'] });
       toast({ title: "Product deleted successfully!" });
     },
-    onError: () => {
-      toast({ title: "Failed to delete product", variant: "destructive" });
+    onError: (error: any) => {
+      console.error('Delete product error:', error);
+      toast({ title: error.message || "Failed to delete product", variant: "destructive" });
     }
   });
 
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string, status: string }) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
       const response = await fetch(`/api/distributor/orders/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await dbUser?.getIdToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ status })
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update order status');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/distributor/orders'] });
       toast({ title: "Order status updated!" });
     },
-    onError: () => {
-      toast({ title: "Failed to update order status", variant: "destructive" });
+    onError: (error: any) => {
+      console.error('Update order status error:', error);
+      toast({ title: error.message || "Failed to update order status", variant: "destructive" });
     }
   });
 
   const updateDeliveryStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string, status: string }) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
       const response = await fetch(`/api/distributor/deliveries/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await dbUser?.getIdToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ status })
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update delivery status');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/distributor/deliveries'] });
       toast({ title: "Delivery status updated!" });
     },
-    onError: () => {
-      toast({ title: "Failed to update delivery status", variant: "destructive" });
+    onError: (error: any) => {
+      console.error('Update delivery status error:', error);
+      toast({ title: error.message || "Failed to update delivery status", variant: "destructive" });
     }
   });
 

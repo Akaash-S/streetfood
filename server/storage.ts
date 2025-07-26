@@ -156,20 +156,29 @@ export class PersistentStorage implements IStorage {
     sampleOrders.forEach(order => this.orders.set(order.id, order));
     sampleDeliveryRequests.forEach(request => this.deliveryRequests.set(request.id, request));
 
-    // Add sample wholesale products for distributors
+    // Add sample wholesale products for distributors - use actual distributor user ID
+    const distributorUser = Array.from(this.users.values()).find(user => user.role === 'distributor');
+    const distributorId = distributorUser ? distributorUser.firebaseUid : "86FrXYYSpcYgRa8KyV9NSs74HMv1";
+    
     const sampleWholesaleProducts = [
-      { id: "wp1", distributorId: "distributor1", name: "Premium Basmati Rice (25kg)", description: "High-quality basmati rice for bulk orders", category: "Grains", price: 45.99, stockQuantity: 150, unit: "bags", minimumOrderQuantity: 5, isActive: true, createdAt: new Date(), updatedAt: new Date() },
-      { id: "wp2", distributorId: "distributor1", name: "Cooking Oil Bulk Pack (20L)", description: "Premium cooking oil in bulk packaging", category: "Oils", price: 89.99, stockQuantity: 75, unit: "containers", minimumOrderQuantity: 2, isActive: true, createdAt: new Date(), updatedAt: new Date() },
-      { id: "wp3", distributorId: "distributor1", name: "Fresh Vegetables Mix (50kg)", description: "Mixed seasonal vegetables in bulk", category: "Vegetables", price: 125.50, stockQuantity: 30, unit: "boxes", minimumOrderQuantity: 1, isActive: true, createdAt: new Date(), updatedAt: new Date() }
+      { id: "wp1", distributorId, name: "Premium Basmati Rice (25kg)", description: "High-quality basmati rice for bulk orders", category: "Grains", price: 45.99, stockQuantity: 150, unit: "bags", minimumOrderQuantity: 5, isActive: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: "wp2", distributorId, name: "Cooking Oil Bulk Pack (20L)", description: "Premium cooking oil in bulk packaging", category: "Oils", price: 89.99, stockQuantity: 75, unit: "containers", minimumOrderQuantity: 2, isActive: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: "wp3", distributorId, name: "Fresh Vegetables Mix (50kg)", description: "Mixed seasonal vegetables in bulk", category: "Vegetables", price: 125.50, stockQuantity: 30, unit: "boxes", minimumOrderQuantity: 1, isActive: true, createdAt: new Date(), updatedAt: new Date() }
     ];
 
     const sampleBulkOrders = [
-      { id: "bo1", shopId: "shop1", distributorId: "distributor1", orderNumber: "#BLK-12345", status: "processing", totalAmount: 2450.00, deliveryAddress: "Downtown Market", estimatedDeliveryDate: new Date("2025-01-17"), notes: "Urgent delivery needed", createdAt: new Date("2025-01-15"), updatedAt: new Date() },
-      { id: "bo2", shopId: "shop2", distributorId: "distributor1", orderNumber: "#BLK-12346", status: "shipped", totalAmount: 1890.75, deliveryAddress: "Central Plaza", estimatedDeliveryDate: new Date("2025-01-16"), notes: "", createdAt: new Date("2025-01-14"), updatedAt: new Date() }
+      { id: "bo1", shopId: "shop1", distributorId, orderNumber: "#BLK-12345", status: "processing", totalAmount: 2450.00, deliveryAddress: "Downtown Market", estimatedDeliveryDate: new Date("2025-01-17"), notes: "Urgent delivery needed", createdAt: new Date("2025-01-15"), updatedAt: new Date() },
+      { id: "bo2", shopId: "shop2", distributorId, orderNumber: "#BLK-12346", status: "shipped", totalAmount: 1890.75, deliveryAddress: "Central Plaza", estimatedDeliveryDate: new Date("2025-01-16"), notes: "", createdAt: new Date("2025-01-14"), updatedAt: new Date() }
+    ];
+
+    const sampleDeliveries = [
+      { id: "sd1", orderId: "bo1", distributorId, shopId: "shop1", driverId: null, vehicleNumber: "TRK-001", status: "scheduled", scheduledDate: new Date("2025-01-17"), deliveredDate: null, createdAt: new Date(), updatedAt: new Date() },
+      { id: "sd2", orderId: "bo2", distributorId, shopId: "shop2", driverId: null, vehicleNumber: "TRK-002", status: "in_transit", scheduledDate: new Date("2025-01-16"), deliveredDate: null, createdAt: new Date(), updatedAt: new Date() }
     ];
 
     sampleWholesaleProducts.forEach(product => this.wholesaleProducts.set(product.id, product));
     sampleBulkOrders.forEach(order => this.bulkOrders.set(order.id, order));
+    sampleDeliveries.forEach(delivery => this.shopDeliveries.set(delivery.id, delivery));
   }
 
   async getUser(id: string): Promise<User | undefined> {

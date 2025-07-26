@@ -21,8 +21,8 @@
       "phone": "+1-555-0101",
       "isActive": true,
       "averageRating": "4.8",
-      "createdAt": "2025-07-26T14:17:44.236Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     },
     "shop2": {
       "id": "shop2",
@@ -32,8 +32,8 @@
       "phone": "+1-555-0102",
       "isActive": true,
       "averageRating": "4.6",
-      "createdAt": "2025-07-26T14:17:44.236Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     }
   },
   "products": {
@@ -46,8 +46,8 @@
       "category": "Vegetables",
       "stock": 100,
       "isAvailable": true,
-      "createdAt": "2025-07-26T14:17:44.236Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     },
     "prod2": {
       "id": "prod2",
@@ -58,8 +58,8 @@
       "category": "Grains",
       "stock": 50,
       "isAvailable": true,
-      "createdAt": "2025-07-26T14:17:44.236Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     },
     "prod3": {
       "id": "prod3",
@@ -70,8 +70,8 @@
       "category": "Oils",
       "stock": 75,
       "isAvailable": true,
-      "createdAt": "2025-07-26T14:17:44.236Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     }
   },
   "orders": {
@@ -90,7 +90,7 @@
         }
       ],
       "createdAt": "2024-12-15T00:00:00.000Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     },
     "order2": {
       "id": "order2",
@@ -107,7 +107,7 @@
         }
       ],
       "createdAt": "2024-12-14T00:00:00.000Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     }
   },
   "deliveryRequests": {
@@ -120,8 +120,121 @@
       "fee": 9.75,
       "status": "available",
       "agentId": null,
-      "createdAt": "2025-07-26T14:17:44.236Z",
-      "updatedAt": "2025-07-26T14:17:44.236Z"
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
+    }
+  },
+  "wholesaleProducts": {
+    "wp1": {
+      "id": "wp1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Premium Basmati Rice (25kg) - Updated",
+      "description": "High-quality basmati rice for bulk orders - Updated description",
+      "category": "Grains",
+      "price": 49.99,
+      "stockQuantity": 200,
+      "unit": "bags",
+      "minimumOrderQuantity": 5,
+      "isActive": true,
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:36.375Z"
+    },
+    "wp2": {
+      "id": "wp2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Cooking Oil Bulk Pack (20L)",
+      "description": "Premium cooking oil in bulk packaging",
+      "category": "Oils",
+      "price": 89.99,
+      "stockQuantity": 75,
+      "unit": "containers",
+      "minimumOrderQuantity": 2,
+      "isActive": true,
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
+    },
+    "wp3": {
+      "id": "wp3",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Fresh Vegetables Mix (50kg)",
+      "description": "Mixed seasonal vegetables in bulk",
+      "category": "Vegetables",
+      "price": 125.5,
+      "stockQuantity": 30,
+      "unit": "boxes",
+      "minimumOrderQuantity": 1,
+      "isActive": true,
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
+    },
+    "7b868774-931a-4362-b3dc-843f1e27a18e": {
+      "name": "Test Bulk Rice",
+      "description": "Test bulk rice product",
+      "category": "Grains",
+      "price": 25.99,
+      "stockQuantity": 100,
+      "unit": "bags",
+      "minimumOrderQuantity": 5,
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "id": "7b868774-931a-4362-b3dc-843f1e27a18e",
+      "createdAt": "2025-07-26T14:41:07.751Z",
+      "updatedAt": "2025-07-26T14:41:07.751Z"
+    }
+  },
+  "bulkOrders": {
+    "bo1": {
+      "id": "bo1",
+      "shopId": "shop1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "orderNumber": "#BLK-12345",
+      "status": "shipped",
+      "totalAmount": 2450,
+      "deliveryAddress": "Downtown Market",
+      "estimatedDeliveryDate": "2025-01-17T00:00:00.000Z",
+      "notes": "Urgent delivery needed",
+      "createdAt": "2025-01-15T00:00:00.000Z",
+      "updatedAt": "2025-07-26T14:41:37.487Z"
+    },
+    "bo2": {
+      "id": "bo2",
+      "shopId": "shop2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "orderNumber": "#BLK-12346",
+      "status": "shipped",
+      "totalAmount": 1890.75,
+      "deliveryAddress": "Central Plaza",
+      "estimatedDeliveryDate": "2025-01-16T00:00:00.000Z",
+      "notes": "",
+      "createdAt": "2025-01-14T00:00:00.000Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
+    }
+  },
+  "shopDeliveries": {
+    "sd1": {
+      "id": "sd1",
+      "orderId": "bo1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "shopId": "shop1",
+      "driverId": null,
+      "vehicleNumber": "TRK-001",
+      "status": "scheduled",
+      "scheduledDate": "2025-01-17T00:00:00.000Z",
+      "deliveredDate": null,
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
+    },
+    "sd2": {
+      "id": "sd2",
+      "orderId": "bo2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "shopId": "shop2",
+      "driverId": null,
+      "vehicleNumber": "TRK-002",
+      "status": "in_transit",
+      "scheduledDate": "2025-01-16T00:00:00.000Z",
+      "deliveredDate": null,
+      "createdAt": "2025-07-26T14:41:04.450Z",
+      "updatedAt": "2025-07-26T14:41:04.450Z"
     }
   }
 }
