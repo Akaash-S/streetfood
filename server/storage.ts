@@ -230,6 +230,14 @@ export class PersistentStorage implements IStorage {
       this.users.set(distributor.id, distributor);
     }
 
+    // Update existing distributors without shop names
+    Array.from(this.users.values()).forEach(user => {
+      if (user.role === 'distributor' && !user.shopName) {
+        user.shopName = 'Premium Food Distributors Inc.';
+        this.users.set(user.id, user);
+      }
+    });
+
     // Add sample wholesale products for distributors - use actual distributor user ID
     const distributorUser = Array.from(this.users.values()).find(user => user.role === 'distributor');
     const distributorId = distributorUser ? distributorUser.firebaseUid : "86FrXYYSpcYgRa8KyV9NSs74HMv1";

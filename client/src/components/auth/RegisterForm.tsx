@@ -22,6 +22,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
     email: "",
     phone: "",
     role: "",
+    shopName: "",
     password: "",
     confirmPassword: "",
   });
@@ -64,6 +65,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
           lastName: formData.lastName,
           phone: formData.phone,
           role: formData.role,
+          shopName: formData.role === 'distributor' ? formData.shopName : null,
         }),
       });
 
@@ -183,6 +185,19 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
                   </SelectContent>
                 </Select>
               </div>
+
+              {formData.role === 'distributor' && (
+                <div className="space-y-2">
+                  <Label htmlFor="shopName">Company Name</Label>
+                  <Input
+                    id="shopName"
+                    placeholder="e.g., Premium Food Distributors Inc."
+                    value={formData.shopName}
+                    onChange={(e) => handleInputChange("shopName", e.target.value)}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
