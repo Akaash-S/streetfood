@@ -1,0 +1,55 @@
+Okay, here's a concise description focusing solely on the "Distributor" role and their work within the Street Food Ecosystem application.
+
+Distributor Role - Responsibilities and Workflow
+
+In the Street Food Ecosystem application, a Distributor acts as a wholesale supplier, primarily serving the Retail Shop Owners. Their main objective is to provide the necessary inventory in bulk to retail shops, which in turn supply the street food vendors.
+
+Key Responsibilities:
+
+Product Catalog Management:
+
+Maintain a detailed list of wholesale products they offer (e.g., ingredients, packaging, supplies).
+
+Update product descriptions, bulk pricing, and available stock levels.
+
+Upload images for their products.
+
+Order Fulfillment (for Retail Shops):
+
+Receive and process incoming bulk orders placed by various Retail Shop Owners.
+
+Review order details, confirm stock availability, and update the order status (e.g., "Processing," "Shipped").
+
+Inventory Management:
+
+Track and manage their own warehouse or supply stock levels for all wholesale products.
+
+Monitor low-stock items to ensure timely replenishment.
+
+Delivery Coordination (to Retail Shops):
+
+Oversee or arrange the logistics for delivering bulk orders directly to the Retail Shops.
+
+Update the delivery status of these outgoing orders.
+
+Workflow within the Application:
+
+Setup: A Distributor registers on the platform and sets up their profile and wholesale product catalog.
+
+Shop Ordering: Retail Shop Owners browse the Distributor's available products within the application and place bulk orders to replenish their own inventory.
+
+Order Processing: The Distributor receives real-time notifications for new orders from shops. They access the Distributor portal to view order details, mark items for preparation, and update the order's status.
+
+Shipment: Once prepared, the Distributor initiates and tracks the shipment of the bulk order to the designated Retail Shop address.
+
+Confirmation: The Distributor marks the order as "Delivered" once the Retail Shop confirms receipt.
+
+Interaction with Other Roles:
+
+Works with Retail Shop Owners: Distributors are the direct suppliers to Retail Shop Owners.
+
+Indirectly Supports Street Food Vendors: By ensuring Retail Shops are well-stocked, Distributors enable Street Food Vendors to consistently find and order the supplies they need.
+
+Manages Deliveries (to Shops): Distributors are responsible for the logistics of getting products to shops, potentially engaging their own delivery methods.
+
+In essence, the Distributor keeps the retail supply chain flowing, ensuring that local shops always have the necessary goods to fulfill orders from street food vendors.

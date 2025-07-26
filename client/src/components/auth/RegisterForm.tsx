@@ -179,6 +179,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
                     <SelectItem value="vendor">Street Food Vendor</SelectItem>
                     <SelectItem value="shop_owner">Retail Shop Owner</SelectItem>
                     <SelectItem value="delivery_agent">Delivery Agent</SelectItem>
+                    <SelectItem value="distributor">Distributor</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

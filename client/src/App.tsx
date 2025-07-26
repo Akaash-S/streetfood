@@ -10,6 +10,7 @@ import Landing from "@/pages/landing";
 import VendorDashboard from "@/pages/vendor-dashboard";
 import ShopOwnerDashboard from "@/pages/shop-owner-dashboard";
 import DeliveryAgentDashboard from "@/pages/delivery-agent-dashboard";
+import DistributorDashboard from "@/pages/distributor-dashboard";
 
 function ProtectedRoute({ component: Component, allowedRoles }: { component: React.ComponentType; allowedRoles: string[] }) {
   const { user, dbUser, loading } = useAuth();
@@ -50,6 +51,9 @@ function AppRouter() {
         case "delivery_agent":
           setLocation("/delivery-agent-dashboard");
           break;
+        case "distributor":
+          setLocation("/distributor-dashboard");
+          break;
       }
     }
   }, [user, dbUser, loading, location, setLocation]);
@@ -78,6 +82,10 @@ function AppRouter() {
       
       <Route path="/delivery-agent-dashboard">
         <ProtectedRoute component={DeliveryAgentDashboard} allowedRoles={["delivery_agent"]} />
+      </Route>
+      
+      <Route path="/distributor-dashboard">
+        <ProtectedRoute component={DistributorDashboard} allowedRoles={["distributor"]} />
       </Route>
       
       <Route component={NotFound} />

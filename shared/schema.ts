@@ -10,7 +10,7 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   phone: text("phone"),
-  role: text("role").notNull(), // 'vendor', 'shop_owner', 'delivery_agent'
+  role: text("role").notNull(), // 'vendor', 'shop_owner', 'delivery_agent', 'distributor'
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -2,7 +2,12 @@
 
 ## Overview
 
-This is a comprehensive Street Food Ecosystem Platform that connects street food vendors, retail shop owners, and delivery agents in a streamlined supply chain. The application provides role-based dashboards for each user type and facilitates order management, product browsing, and delivery coordination.
+This is a comprehensive Street Food Ecosystem Platform that connects street food vendors, retail shop owners, delivery agents, and distributors in a streamlined supply chain. The application provides role-based dashboards for each user type and facilitates order management, product browsing, and delivery coordination.
+
+## Recent Changes
+- **2025-07-26**: Fixed authentication system - resolved token verification issues in API requests
+- **2025-07-26**: Added Distributor role and dashboard for wholesale supply management
+- **2025-07-26**: Updated query client to properly include Firebase authentication tokens in API calls
 
 ## User Preferences
 
@@ -60,6 +65,7 @@ The system uses a relational database with the following core entities:
 - **Vendor Dashboard**: Product browsing, order placement, order tracking
 - **Shop Owner Dashboard**: Order management, inventory updates, customer communication
 - **Delivery Agent Dashboard**: Available deliveries, route management, earnings tracking
+- **Distributor Dashboard**: Bulk order management, wholesale product catalog, shop delivery coordination
 
 ## Data Flow
 
