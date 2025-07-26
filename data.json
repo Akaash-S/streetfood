@@ -10,6 +10,17 @@
       "id": "4c5704c3-653b-4135-bd92-8d84f176fc9b",
       "createdAt": "2025-07-26T14:24:12.156Z",
       "updatedAt": "2025-07-26T14:24:12.156Z"
+    },
+    "8ec5ef82-c90c-4cd0-ad3c-e15eefab9df5": {
+      "firebaseUid": "Vti7QbkHEecN6rUOJESIg8URmQn2",
+      "email": "one@example.com",
+      "firstName": "one",
+      "lastName": "one",
+      "phone": "+91 8899776655",
+      "role": "vendor",
+      "id": "8ec5ef82-c90c-4cd0-ad3c-e15eefab9df5",
+      "createdAt": "2025-07-26T14:47:53.362Z",
+      "updatedAt": "2025-07-26T14:47:53.362Z"
     }
   },
   "shops": {
@@ -21,8 +32,8 @@
       "phone": "+1-555-0101",
       "isActive": true,
       "averageRating": "4.8",
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "shop2": {
       "id": "shop2",
@@ -32,8 +43,8 @@
       "phone": "+1-555-0102",
       "isActive": true,
       "averageRating": "4.6",
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     }
   },
   "products": {
@@ -46,8 +57,8 @@
       "category": "Vegetables",
       "stock": 100,
       "isAvailable": true,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "prod2": {
       "id": "prod2",
@@ -58,8 +69,8 @@
       "category": "Grains",
       "stock": 50,
       "isAvailable": true,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "prod3": {
       "id": "prod3",
@@ -70,8 +81,8 @@
       "category": "Oils",
       "stock": 75,
       "isAvailable": true,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     }
   },
   "orders": {
@@ -90,7 +101,7 @@
         }
       ],
       "createdAt": "2024-12-15T00:00:00.000Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "order2": {
       "id": "order2",
@@ -107,7 +118,7 @@
         }
       ],
       "createdAt": "2024-12-14T00:00:00.000Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     }
   },
   "deliveryRequests": {
@@ -120,25 +131,11 @@
       "fee": 9.75,
       "status": "available",
       "agentId": null,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     }
   },
   "wholesaleProducts": {
-    "wp1": {
-      "id": "wp1",
-      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
-      "name": "Premium Basmati Rice (25kg) - Updated",
-      "description": "High-quality basmati rice for bulk orders - Updated description",
-      "category": "Grains",
-      "price": 49.99,
-      "stockQuantity": 200,
-      "unit": "bags",
-      "minimumOrderQuantity": 5,
-      "isActive": true,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:36.375Z"
-    },
     "wp2": {
       "id": "wp2",
       "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
@@ -150,8 +147,8 @@
       "unit": "containers",
       "minimumOrderQuantity": 2,
       "isActive": true,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "wp3": {
       "id": "wp3",
@@ -164,8 +161,8 @@
       "unit": "boxes",
       "minimumOrderQuantity": 1,
       "isActive": true,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "7b868774-931a-4362-b3dc-843f1e27a18e": {
       "name": "Test Bulk Rice",
@@ -179,6 +176,34 @@
       "id": "7b868774-931a-4362-b3dc-843f1e27a18e",
       "createdAt": "2025-07-26T14:41:07.751Z",
       "updatedAt": "2025-07-26T14:41:07.751Z"
+    },
+    "7e75f6d1-633b-4eea-99a0-b56d2ec7f2c7": {
+      "name": "sample 01",
+      "description": "dsknldsjf erdsjfhefhewkjfvewyegwvwe",
+      "category": "Oils",
+      "price": 2000,
+      "stockQuantity": 2000,
+      "unit": "kg",
+      "minimumOrderQuantity": 200,
+      "isActive": true,
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "id": "7e75f6d1-633b-4eea-99a0-b56d2ec7f2c7",
+      "createdAt": "2025-07-26T14:44:34.424Z",
+      "updatedAt": "2025-07-26T14:44:34.424Z"
+    },
+    "37ac1555-2600-4663-b546-9116a77409ff": {
+      "name": "sample 02",
+      "description": "kjd dlfdhbluhd ldj",
+      "category": "Grains",
+      "price": 200,
+      "stockQuantity": 5,
+      "unit": "kg",
+      "minimumOrderQuantity": 2,
+      "isActive": true,
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "id": "37ac1555-2600-4663-b546-9116a77409ff",
+      "createdAt": "2025-07-26T14:46:17.008Z",
+      "updatedAt": "2025-07-26T14:46:17.008Z"
     }
   },
   "bulkOrders": {
@@ -187,13 +212,13 @@
       "shopId": "shop1",
       "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
       "orderNumber": "#BLK-12345",
-      "status": "shipped",
+      "status": "processing",
       "totalAmount": 2450,
       "deliveryAddress": "Downtown Market",
       "estimatedDeliveryDate": "2025-01-17T00:00:00.000Z",
       "notes": "Urgent delivery needed",
       "createdAt": "2025-01-15T00:00:00.000Z",
-      "updatedAt": "2025-07-26T14:41:37.487Z"
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     },
     "bo2": {
       "id": "bo2",
@@ -206,7 +231,7 @@
       "estimatedDeliveryDate": "2025-01-16T00:00:00.000Z",
       "notes": "",
       "createdAt": "2025-01-14T00:00:00.000Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     }
   },
   "shopDeliveries": {
@@ -217,11 +242,11 @@
       "shopId": "shop1",
       "driverId": null,
       "vehicleNumber": "TRK-001",
-      "status": "scheduled",
+      "status": "in_transit",
       "scheduledDate": "2025-01-17T00:00:00.000Z",
       "deliveredDate": null,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:45:13.661Z"
     },
     "sd2": {
       "id": "sd2",
@@ -233,8 +258,8 @@
       "status": "in_transit",
       "scheduledDate": "2025-01-16T00:00:00.000Z",
       "deliveredDate": null,
-      "createdAt": "2025-07-26T14:41:04.450Z",
-      "updatedAt": "2025-07-26T14:41:04.450Z"
+      "createdAt": "2025-07-26T14:41:44.378Z",
+      "updatedAt": "2025-07-26T14:41:44.378Z"
     }
   }
 }

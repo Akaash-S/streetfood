@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Package, TruckIcon, BarChart3, Settings, Users, ShoppingCart, Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Package, TruckIcon, BarChart3, Settings, Users, ShoppingCart, Plus, Edit, Trash2, Eye, Search, Filter, AlertTriangle, TrendingUp, Calendar, MapPin, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function DistributorDashboard() {
@@ -22,6 +22,9 @@ export default function DistributorDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Fetch wholesale products
   const { data: wholesaleProducts = [], isLoading: productsLoading } = useQuery<any[]>({
@@ -219,59 +222,92 @@ export default function DistributorDashboard() {
     }
   };
 
+  // Filter functions
+  const filteredProducts = wholesaleProducts.filter((product: any) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const filteredOrders = bulkOrders.filter((order: any) => {
+    return statusFilter === "all" || order.status === statusFilter;
+  });
+
   const stats = [
     {
       label: "Total Products",
       value: wholesaleProducts.length.toString(),
       icon: Package,
-      bgColor: "bg-blue-100",
-      iconColor: "text-blue-600"
+      bgColor: "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20",
+      iconColor: "text-blue-600",
+      trend: "+12%",
+      trendColor: "text-green-600"
     },
     {
       label: "Active Orders",
       value: bulkOrders.filter((order: any) => !['delivered', 'cancelled'].includes(order.status)).length.toString(),
       icon: ShoppingCart,
-      bgColor: "bg-green-100",
-      iconColor: "text-green-600"
+      bgColor: "bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20",
+      iconColor: "text-green-600",
+      trend: "+8%",
+      trendColor: "text-green-600"
     },
     {
-      label: "Total Orders",
-      value: bulkOrders.length.toString(),
+      label: "Total Revenue",
+      value: `$${bulkOrders.reduce((total: number, order: any) => total + order.totalAmount, 0).toLocaleString()}`,
       icon: BarChart3,
-      bgColor: "bg-purple-100",
-      iconColor: "text-purple-600"
+      bgColor: "bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20",
+      iconColor: "text-purple-600",
+      trend: "+23%",
+      trendColor: "text-green-600"
     },
     {
       label: "Scheduled Deliveries",
       value: deliveries.filter((delivery: any) => delivery.status === 'scheduled').length.toString(),
       icon: TruckIcon,
-      bgColor: "bg-orange-100",
-      iconColor: "text-orange-600"
+      bgColor: "bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20",
+      iconColor: "text-orange-600",
+      trend: "+5%",
+      trendColor: "text-green-600"
     }
   ];
 
   if (!dbUser) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
+      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow-sm border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Package className="h-8 w-8 text-primary" />
+            <motion.div 
+              className="flex items-center space-x-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg">
+                <Package className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                   Distributor Dashboard
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Welcome back, {dbUser.firstName}
+                  Welcome back, <span className="font-medium text-blue-600 dark:text-blue-400">{dbUser.firstName}</span>
                 </p>
               </div>
-            </div>
-            <Button variant="outline" onClick={logout}>
-              Sign Out
-            </Button>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Button variant="outline" onClick={logout} className="hover:shadow-md transition-shadow duration-200">
+                Sign Out
+              </Button>
+            </motion.div>
           </div>
         </div>
       </header>
@@ -289,26 +325,35 @@ export default function DistributorDashboard() {
           {/* Dashboard Overview */}
           <TabsContent value="dashboard" className="space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -2, transition: { duration: 0.2 } }}
                 >
-                  <Card>
-                    <CardContent className="p-6">
+                  <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className={`absolute inset-0 ${stat.bgColor}`} />
+                    <CardContent className="p-6 relative">
                       <div className="flex items-center justify-between">
-                        <div>
+                        <div className="space-y-1">
                           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                             {stat.label}
                           </p>
-                          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          <p className="text-2xl font-bold text-gray-900 dark:text-white">
                             {stat.value}
                           </p>
+                          <div className="flex items-center space-x-1">
+                            <TrendingUp className={`h-3 w-3 ${stat.trendColor}`} />
+                            <span className={`text-xs font-medium ${stat.trendColor}`}>
+                              {stat.trend}
+                            </span>
+                            <span className="text-xs text-gray-500">vs last month</span>
+                          </div>
                         </div>
-                        <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                        <div className="p-3 bg-white/20 dark:bg-black/20 rounded-full backdrop-blur-sm">
                           <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
                         </div>
                       </div>
@@ -369,15 +414,19 @@ export default function DistributorDashboard() {
 
           {/* Products Management */}
           <TabsContent value="products" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Wholesale Products</h2>
-              <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Product
-                  </Button>
-                </DialogTrigger>
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Wholesale Products</h2>
+                <p className="text-gray-600 dark:text-gray-400">Manage your wholesale product catalog</p>
+              </div>
+              <div className="flex gap-3">
+                <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Product
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle>Add New Product</DialogTitle>
@@ -433,184 +482,349 @@ export default function DistributorDashboard() {
                   </form>
                 </DialogContent>
               </Dialog>
+              </div>
+            </div>
+
+            {/* Search and Filter Controls */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="flex flex-1 gap-3 items-center">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-40">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="Grains">Grains</SelectItem>
+                    <SelectItem value="Oils">Oils</SelectItem>
+                    <SelectItem value="Vegetables">Vegetables</SelectItem>
+                    <SelectItem value="Spices">Spices</SelectItem>
+                    <SelectItem value="Dairy">Dairy</SelectItem>
+                    <SelectItem value="Others">Others</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="text-sm text-gray-500">
+                Showing {filteredProducts.length} of {wholesaleProducts.length} products
+              </div>
             </div>
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {wholesaleProducts.map((product: any) => (
-                <Card key={product.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{product.name}</CardTitle>
-                        <Badge variant="secondary">{product.category}</Badge>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => setEditingProduct(product)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="destructive"
-                          onClick={() => deleteProductMutation.mutate(product.id)}
-                          disabled={deleteProductMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">{product.description}</p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Price:</span>
-                        <span className="font-medium">${product.price}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Stock:</span>
-                        <span className={`font-medium ${product.stockQuantity < 20 ? 'text-red-600' : 'text-green-600'}`}>
-                          {product.stockQuantity} {product.unit}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Min Order:</span>
-                        <span className="font-medium">{product.minimumOrderQuantity} {product.unit}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              <AnimatePresence>
+                {filteredProducts.map((product: any, index: number) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  >
+                    <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900" />
+                      <CardHeader className="relative">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-2">
+                            <CardTitle className="text-lg group-hover:text-blue-600 transition-colors duration-200">
+                              {product.name}
+                            </CardTitle>
+                            <Badge 
+                              variant="secondary" 
+                              className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                            >
+                              {product.category}
+                            </Badge>
+                            {product.stockQuantity < 20 && (
+                              <div className="flex items-center space-x-1 text-red-600">
+                                <AlertTriangle className="h-3 w-3" />
+                                <span className="text-xs font-medium">Low Stock</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setEditingProduct(product)}
+                              className="h-8 w-8 p-0 hover:bg-blue-50 hover:border-blue-200"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => deleteProductMutation.mutate(product.id)}
+                              disabled={deleteProductMutation.isPending}
+                              className="h-8 w-8 p-0 hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="relative">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                          {product.description}
+                        </p>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span className="text-sm text-gray-500">Price:</span>
+                            <span className="font-bold text-lg text-green-600">${product.price}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                              <div className="text-xs text-gray-500">Stock</div>
+                              <div className={`font-medium ${product.stockQuantity < 20 ? 'text-red-600' : 'text-green-600'}`}>
+                                {product.stockQuantity} {product.unit}
+                              </div>
+                            </div>
+                            <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                              <div className="text-xs text-gray-500">Min Order</div>
+                              <div className="font-medium text-gray-900 dark:text-white">
+                                {product.minimumOrderQuantity} {product.unit}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
+
+            {filteredProducts.length === 0 && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No products found</h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  {searchTerm || categoryFilter !== "all" 
+                    ? "Try adjusting your search or filters"
+                    : "Get started by adding your first wholesale product"
+                  }
+                </p>
+              </motion.div>
+            )}
           </TabsContent>
 
           {/* Orders Management */}
           <TabsContent value="orders" className="space-y-6">
-            <h2 className="text-2xl font-bold">Bulk Orders</h2>
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Bulk Orders</h2>
+                <p className="text-gray-600 dark:text-gray-400">Track and manage wholesale orders</p>
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-48">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Orders</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="shipped">Shipped</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-4">
-              {bulkOrders.map((order: any) => (
-                <Card key={order.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4">
-                          <div>
-                            <h3 className="font-semibold text-lg">{order.orderNumber}</h3>
-                            <p className="text-sm text-gray-500">
-                              Delivery: {order.deliveryAddress}
-                            </p>
+              {filteredOrders.map((order: any, index: number) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900" />
+                    <CardContent className="p-6 relative">
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="flex-1 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                <ShoppingCart className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{order.orderNumber}</h3>
+                                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <MapPin className="h-3 w-3" />
+                                  <span>{order.deliveryAddress}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <Badge className={`${getStatusColor(order.status)} text-white`}>
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </Badge>
                           </div>
-                          <Badge className={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <BarChart3 className="h-4 w-4 text-green-600" />
+                                <span className="text-sm text-gray-500">Total Amount</span>
+                              </div>
+                              <p className="font-bold text-lg text-green-600">${order.totalAmount.toLocaleString()}</p>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4 text-blue-600" />
+                                <span className="text-sm text-gray-500">Order Date</span>
+                              </div>
+                              <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <Clock className="h-4 w-4 text-orange-600" />
+                                <span className="text-sm text-gray-500">Est. Delivery</span>
+                              </div>
+                              <p className="font-medium">
+                                {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString() : 'TBD'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {order.notes && (
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                              <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">Notes</p>
+                              <p className="text-sm text-blue-700 dark:text-blue-300">{order.notes}</p>
+                            </div>
+                          )}
                         </div>
-                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <p className="text-sm text-gray-500">Total Amount</p>
-                            <p className="font-medium">${order.totalAmount}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-500">Order Date</p>
-                            <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-500">Estimated Delivery</p>
-                            <p className="font-medium">
-                              {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString() : 'TBD'}
-                            </p>
-                          </div>
+                        
+                        <div className="lg:w-48">
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Update Status</Label>
+                          <Select 
+                            value={order.status} 
+                            onValueChange={(status) => updateOrderStatusMutation.mutate({ id: order.id, status })}
+                          >
+                            <SelectTrigger className="w-full mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="processing">Processing</SelectItem>
+                              <SelectItem value="shipped">Shipped</SelectItem>
+                              <SelectItem value="delivered">Delivered</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        {order.notes && (
-                          <div className="mt-4">
-                            <p className="text-sm text-gray-500">Notes</p>
-                            <p className="text-sm">{order.notes}</p>
-                          </div>
-                        )}
                       </div>
-                      <div className="flex flex-col space-y-2">
-                        <Select 
-                          value={order.status} 
-                          onValueChange={(status) => updateOrderStatusMutation.mutate({ id: order.id, status })}
-                        >
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="processing">Processing</SelectItem>
-                            <SelectItem value="shipped">Shipped</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </TabsContent>
 
           {/* Deliveries Management */}
           <TabsContent value="deliveries" className="space-y-6">
-            <h2 className="text-2xl font-bold">Shop Deliveries</h2>
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shop Deliveries</h2>
+                <p className="text-gray-600 dark:text-gray-400">Coordinate delivery schedules and logistics</p>
+              </div>
+            </div>
             <div className="space-y-4">
-              {deliveries.map((delivery: any) => (
-                <Card key={delivery.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4">
-                          <div>
-                            <h3 className="font-semibold text-lg">Delivery #{delivery.id.slice(-6)}</h3>
-                            <p className="text-sm text-gray-500">
-                              Vehicle: {delivery.vehicleNumber || 'Not assigned'}
-                            </p>
+              {deliveries.map((delivery: any, index: number) => (
+                <motion.div
+                  key={delivery.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900" />
+                    <CardContent className="p-6 relative">
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="flex-1 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                                <TruckIcon className="h-5 w-5 text-orange-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                                  Delivery #{delivery.id.slice(-6)}
+                                </h3>
+                                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <TruckIcon className="h-3 w-3" />
+                                  <span>{delivery.vehicleNumber || 'Vehicle not assigned'}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <Badge className={`${getStatusColor(delivery.status)} text-white`}>
+                              {delivery.status.replace('_', ' ').split(' ').map((word: string) => 
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                              ).join(' ')}
+                            </Badge>
                           </div>
-                          <Badge className={getStatusColor(delivery.status)}>
-                            {delivery.status}
-                          </Badge>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4 text-blue-600" />
+                                <span className="text-sm text-gray-500">Scheduled Date</span>
+                              </div>
+                              <p className="font-medium">{new Date(delivery.scheduledDate).toLocaleDateString()}</p>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <Users className="h-4 w-4 text-purple-600" />
+                                <span className="text-sm text-gray-500">Driver</span>
+                              </div>
+                              <p className="font-medium">{delivery.driverId || 'Not assigned'}</p>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <Clock className="h-4 w-4 text-green-600" />
+                                <span className="text-sm text-gray-500">Delivered</span>
+                              </div>
+                              <p className="font-medium">
+                                {delivery.deliveredDate ? new Date(delivery.deliveredDate).toLocaleDateString() : 'Pending'}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <p className="text-sm text-gray-500">Scheduled Date</p>
-                            <p className="font-medium">{new Date(delivery.scheduledDate).toLocaleDateString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-500">Driver</p>
-                            <p className="font-medium">{delivery.driverId || 'Not assigned'}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-500">Delivered Date</p>
-                            <p className="font-medium">
-                              {delivery.deliveredDate ? new Date(delivery.deliveredDate).toLocaleDateString() : 'Not delivered'}
-                            </p>
-                          </div>
+                        
+                        <div className="lg:w-48">
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Update Status</Label>
+                          <Select 
+                            value={delivery.status} 
+                            onValueChange={(status) => updateDeliveryStatusMutation.mutate({ id: delivery.id, status })}
+                          >
+                            <SelectTrigger className="w-full mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="scheduled">Scheduled</SelectItem>
+                              <SelectItem value="in_transit">In Transit</SelectItem>
+                              <SelectItem value="delivered">Delivered</SelectItem>
+                              <SelectItem value="failed">Failed</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-                      <div className="flex flex-col space-y-2">
-                        <Select 
-                          value={delivery.status} 
-                          onValueChange={(status) => updateDeliveryStatusMutation.mutate({ id: delivery.id, status })}
-                        >
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="scheduled">Scheduled</SelectItem>
-                            <SelectItem value="in_transit">In Transit</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="failed">Failed</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </TabsContent>
