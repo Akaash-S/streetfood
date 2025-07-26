@@ -198,6 +198,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Distributor routes
+  app.get("/api/distributor/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const products = await storage.getWholesaleProductsByDistributorId(req.user!.uid);
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching wholesale products:", error);
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.post("/api/distributor/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const productData = { ...req.body, distributorId: req.user!.uid };
+      const product = await storage.createWholesaleProduct(productData);
+      res.status(201).json(product);
+    } catch (error) {
+      console.error("Error creating wholesale product:", error);
+      res.status(500).json({ message: "Failed to create product" });
+    }
+  });
+
+  app.put("/api/distributor/products/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const updatedProduct = await storage.updateWholesaleProduct(id, req.body);
+      if (!updatedProduct) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error("Error updating wholesale product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  app.delete("/api/distributor/products/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteWholesaleProduct(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting wholesale product:", error);
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
+  app.get("/api/distributor/orders", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const orders = await storage.getBulkOrdersByDistributorId(req.user!.uid);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching bulk orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.put("/api/distributor/orders/:id/status", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const updatedOrder = await storage.updateBulkOrderStatus(id, status);
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  app.get("/api/distributor/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const deliveries = await storage.getShopDeliveriesByDistributorId(req.user!.uid);
+      res.json(deliveries);
+    } catch (error) {
+      console.error("Error fetching shop deliveries:", error);
+      res.status(500).json({ message: "Failed to fetch deliveries" });
+    }
+  });
+
+  app.post("/api/distributor/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const deliveryData = { ...req.body, distributorId: req.user!.uid };
+      const delivery = await storage.createShopDelivery(deliveryData);
+      res.status(201).json(delivery);
+    } catch (error) {
+      console.error("Error creating shop delivery:", error);
+      res.status(500).json({ message: "Failed to create delivery" });
+    }
+  });
+
+  app.put("/api/distributor/deliveries/:id/status", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const updatedDelivery = await storage.updateShopDeliveryStatus(id, status);
+      if (!updatedDelivery) {
+        return res.status(404).json({ message: "Delivery not found" });
+      }
+      res.json(updatedDelivery);
+    } catch (error) {
+      console.error("Error updating delivery status:", error);
+      res.status(500).json({ message: "Failed to update delivery status" });
+    }
+  });
+
+  // Browse all wholesale products (for shop owners)
+  app.get("/api/wholesale/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const products = await storage.getAllWholesaleProducts();
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching all wholesale products:", error);
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

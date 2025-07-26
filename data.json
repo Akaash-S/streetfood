@@ -1,0 +1,127 @@
+{
+  "users": {
+    "4c5704c3-653b-4135-bd92-8d84f176fc9b": {
+      "firebaseUid": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "email": "dbs@example.com",
+      "firstName": "dbs",
+      "lastName": "dbs",
+      "phone": "+91 6699885577",
+      "role": "distributor",
+      "id": "4c5704c3-653b-4135-bd92-8d84f176fc9b",
+      "createdAt": "2025-07-26T14:24:12.156Z",
+      "updatedAt": "2025-07-26T14:24:12.156Z"
+    }
+  },
+  "shops": {
+    "shop1": {
+      "id": "shop1",
+      "shopName": "Fresh Mart Supplies",
+      "address": "Downtown Market",
+      "ownerId": "owner1",
+      "phone": "+1-555-0101",
+      "isActive": true,
+      "averageRating": "4.8",
+      "createdAt": "2025-07-26T14:17:44.236Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    },
+    "shop2": {
+      "id": "shop2",
+      "shopName": "Quality Food Store",
+      "address": "Central Plaza",
+      "ownerId": "owner2",
+      "phone": "+1-555-0102",
+      "isActive": true,
+      "averageRating": "4.6",
+      "createdAt": "2025-07-26T14:17:44.236Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    }
+  },
+  "products": {
+    "prod1": {
+      "id": "prod1",
+      "shopId": "shop1",
+      "name": "Fresh Tomatoes",
+      "description": "Organic tomatoes",
+      "price": 3.5,
+      "category": "Vegetables",
+      "stock": 100,
+      "isAvailable": true,
+      "createdAt": "2025-07-26T14:17:44.236Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    },
+    "prod2": {
+      "id": "prod2",
+      "shopId": "shop1",
+      "name": "Premium Rice",
+      "description": "Basmati rice 5kg",
+      "price": 12.99,
+      "category": "Grains",
+      "stock": 50,
+      "isAvailable": true,
+      "createdAt": "2025-07-26T14:17:44.236Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    },
+    "prod3": {
+      "id": "prod3",
+      "shopId": "shop2",
+      "name": "Cooking Oil",
+      "description": "Sunflower oil 1L",
+      "price": 4.25,
+      "category": "Oils",
+      "stock": 75,
+      "isAvailable": true,
+      "createdAt": "2025-07-26T14:17:44.236Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    }
+  },
+  "orders": {
+    "order1": {
+      "id": "order1",
+      "vendorId": "test123",
+      "shopId": "shop1",
+      "orderNumber": "#12345",
+      "status": "delivered",
+      "total": 234.5,
+      "items": [
+        {
+          "productId": "prod1",
+          "quantity": 20,
+          "price": 3.5
+        }
+      ],
+      "createdAt": "2024-12-15T00:00:00.000Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    },
+    "order2": {
+      "id": "order2",
+      "vendorId": "test123",
+      "shopId": "shop2",
+      "orderNumber": "#12344",
+      "status": "in_transit",
+      "total": 189.25,
+      "items": [
+        {
+          "productId": "prod3",
+          "quantity": 10,
+          "price": 4.25
+        }
+      ],
+      "createdAt": "2024-12-14T00:00:00.000Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    }
+  },
+  "deliveryRequests": {
+    "del1": {
+      "id": "del1",
+      "orderId": "order2",
+      "route": "Quality Food Store → John's Food Cart",
+      "distance": "1.8 km",
+      "estimatedTime": "12 mins",
+      "fee": 9.75,
+      "status": "available",
+      "agentId": null,
+      "createdAt": "2025-07-26T14:17:44.236Z",
+      "updatedAt": "2025-07-26T14:17:44.236Z"
+    }
+  }
+}
