@@ -5,11 +5,13 @@
 This is a comprehensive Street Food Ecosystem Platform that connects street food vendors, retail shop owners, delivery agents, and distributors in a streamlined supply chain. The application provides role-based dashboards for each user type and facilitates order management, product browsing, and delivery coordination.
 
 ## Recent Changes
+- **2025-07-26**: Updated distributor role to include shop name "Premium Food Distributors Inc."
+- **2025-07-26**: Enhanced landing page to display distributor role with company name in supported roles
+- **2025-07-26**: Added shopName field to user schema for distributors
+- **2025-07-26**: Created comprehensive vendor dashboard with cart, product browser, order history, and profile
 - **2025-07-26**: Implemented complete dynamic distributor dashboard with full CRUD functionality
 - **2025-07-26**: Added persistent file-based storage to resolve login/logout persistence issues
-- **2025-07-26**: Created comprehensive distributor API endpoints for products, orders, and deliveries
-- **2025-07-26**: Added wholesale products management, bulk orders tracking, and delivery coordination
-- **2025-07-26**: Fixed authentication system - resolved token verification issues in API requests
+- **2025-07-26**: Fixed authentication system with development fallback for testing
 
 ## User Preferences
 

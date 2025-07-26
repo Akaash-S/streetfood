@@ -46,6 +46,19 @@ export default function Landing() {
       ],
       bgColor: "bg-purple-100",
       iconColor: "text-purple-600"
+    },
+    {
+      icon: Store,
+      title: "Distributors",
+      description: "Wholesale suppliers from Premium Food Distributors Inc. providing bulk ingredients to retail shops.",
+      features: [
+        "Wholesale product management",
+        "Bulk order processing",
+        "Delivery scheduling",
+        "Inventory tracking"
+      ],
+      bgColor: "bg-orange-100",
+      iconColor: "text-orange-600"
     }
   ];
 
@@ -123,7 +136,7 @@ export default function Landing() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="grid md:grid-cols-3 gap-8 mt-20"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20"
         >
           {roleCards.map((card, index) => (
             <motion.div

@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   lastName: text("last_name").notNull(),
   phone: text("phone"),
   role: text("role").notNull(), // 'vendor', 'shop_owner', 'delivery_agent', 'distributor'
+  shopName: text("shop_name"), // For distributors, this stores their distribution company name
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -142,6 +142,7 @@ export class PersistentStorage implements IStorage {
         lastName: 'Rodriguez',
         phone: '+1-555-0103',
         role: 'vendor',
+        shopName: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -159,6 +160,7 @@ export class PersistentStorage implements IStorage {
         lastName: 'Johnson',
         phone: '+1-555-0102',
         role: 'shop_owner',
+        shopName: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -172,6 +174,7 @@ export class PersistentStorage implements IStorage {
         lastName: 'Martinez',
         phone: '+1-555-0104',
         role: 'shop_owner',
+        shopName: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -208,6 +211,24 @@ export class PersistentStorage implements IStorage {
     sampleProducts.forEach(product => this.products.set(product.id, product));
     sampleOrders.forEach(order => this.orders.set(order.id, order));
     sampleDeliveryRequests.forEach(request => this.deliveryRequests.set(request.id, request));
+
+    // Add distributor user if not exists
+    const distributorExists = Array.from(this.users.values()).some(user => user.role === 'distributor');
+    if (!distributorExists) {
+      const distributor: User = {
+        id: randomUUID(),
+        firebaseUid: '86FrXYYSpcYgRa8KyV9NSs74HMv1',
+        email: 'distributor@premiumfood.com',
+        firstName: 'David',
+        lastName: 'Smith',
+        phone: '+1-555-0101',
+        role: 'distributor',
+        shopName: 'Premium Food Distributors Inc.',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.users.set(distributor.id, distributor);
+    }
 
     // Add sample wholesale products for distributors - use actual distributor user ID
     const distributorUser = Array.from(this.users.values()).find(user => user.role === 'distributor');
@@ -257,6 +278,7 @@ export class PersistentStorage implements IStorage {
       ...insertUser, 
       id,
       phone: insertUser.phone || null,
+      shopName: (insertUser as any).shopName || null,
       createdAt: now,
       updatedAt: now,
     };
