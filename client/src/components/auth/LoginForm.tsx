@@ -40,6 +40,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
       });
 
       if (!response.ok) {
+        if (response.status === 404) {
+          // User not found in database, but exists in Firebase - redirect to complete registration
+          throw new Error('Please complete your registration by filling out your profile information.');
+        }
         const errorData = await response.json();
         throw new Error(errorData.message || 'Login failed');
       }

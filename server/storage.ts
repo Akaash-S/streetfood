@@ -1,5 +1,7 @@
 import { type User, type InsertUser, type RetailShop, type InsertRetailShop } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { writeFileSync, readFileSync, existsSync } from "fs";
+import { join } from "path";
 
 // Updated interface with Firebase UID methods and full functionality
 export interface IStorage {
@@ -31,12 +33,13 @@ export interface IStorage {
   acceptDeliveryRequest(requestId: string, agentId: string): Promise<any>;
 }
 
-export class MemStorage implements IStorage {
+export class PersistentStorage implements IStorage {
   private users: Map<string, User>;
   private shops: Map<string, RetailShop>;
   private products: Map<string, any>;
   private orders: Map<string, any>;
   private deliveryRequests: Map<string, any>;
+  private dataFile = join(process.cwd(), 'data.json');
 
   constructor() {
     this.users = new Map();
@@ -44,7 +47,52 @@ export class MemStorage implements IStorage {
     this.products = new Map();
     this.orders = new Map();
     this.deliveryRequests = new Map();
+    this.loadData();
     this.seedData();
+  }
+
+  private loadData() {
+    try {
+      if (existsSync(this.dataFile)) {
+        const data = JSON.parse(readFileSync(this.dataFile, 'utf8'));
+        
+        // Restore Maps from saved data
+        if (data.users) {
+          this.users = new Map(Object.entries(data.users));
+        }
+        if (data.shops) {
+          this.shops = new Map(Object.entries(data.shops));
+        }
+        if (data.products) {
+          this.products = new Map(Object.entries(data.products));
+        }
+        if (data.orders) {
+          this.orders = new Map(Object.entries(data.orders));
+        }
+        if (data.deliveryRequests) {
+          this.deliveryRequests = new Map(Object.entries(data.deliveryRequests));
+        }
+        
+        console.log(`Loaded ${this.users.size} users, ${this.shops.size} shops from persistent storage`);
+      }
+    } catch (error) {
+      console.log('No persistent data found, starting fresh');
+    }
+  }
+
+  private saveData() {
+    try {
+      const data = {
+        users: Object.fromEntries(this.users),
+        shops: Object.fromEntries(this.shops),
+        products: Object.fromEntries(this.products),
+        orders: Object.fromEntries(this.orders),
+        deliveryRequests: Object.fromEntries(this.deliveryRequests),
+      };
+      writeFileSync(this.dataFile, JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
   }
 
   private seedData() {
@@ -102,6 +150,7 @@ export class MemStorage implements IStorage {
       updatedAt: now,
     };
     this.users.set(id, user);
+    this.saveData(); // Persist after changes
     return user;
   }
 
@@ -124,6 +173,7 @@ export class MemStorage implements IStorage {
       averageRating: "0.00",
     };
     this.shops.set(id, shop);
+    this.saveData(); // Persist after changes
     return shop;
   }
 
@@ -144,6 +194,7 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(),
     };
     this.products.set(newProduct.id, newProduct);
+    this.saveData();
     return newProduct;
   }
 
@@ -153,6 +204,7 @@ export class MemStorage implements IStorage {
     
     const updatedProduct = { ...product, ...updates, updatedAt: new Date() };
     this.products.set(id, updatedProduct);
+    this.saveData();
     return updatedProduct;
   }
 
@@ -174,6 +226,7 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(),
     };
     this.orders.set(newOrder.id, newOrder);
+    this.saveData();
     return newOrder;
   }
 
@@ -183,6 +236,7 @@ export class MemStorage implements IStorage {
     
     const updatedOrder = { ...order, status, updatedAt: new Date() };
     this.orders.set(orderId, updatedOrder);
+    this.saveData();
     return updatedOrder;
   }
 
@@ -204,6 +258,7 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(),
     };
     this.deliveryRequests.set(newRequest.id, newRequest);
+    this.saveData();
     return newRequest;
   }
 
@@ -213,9 +268,10 @@ export class MemStorage implements IStorage {
     
     const updatedRequest = { ...request, agentId, status: 'accepted', updatedAt: new Date() };
     this.deliveryRequests.set(requestId, updatedRequest);
+    this.saveData();
     return updatedRequest;
   }
 }
 
 // Use memory storage for now to ensure reliability
-export const storage = new MemStorage();
+export const storage = new PersistentStorage();
