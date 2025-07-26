@@ -8,6 +8,7 @@ interface AuthContextType {
   dbUser: DBUser | null;
   loading: boolean;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,27 +26,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [dbUser, setDbUser] = useState<DBUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserData = async (firebaseUser: User) => {
+    try {
+      const token = await firebaseUser.getIdToken();
+      const response = await fetch('/api/users/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const userData = await response.json();
+        setDbUser(userData);
+        return userData;
+      } else {
+        console.error("Failed to fetch user data:", response.status);
+        setDbUser(null);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setDbUser(null);
+    }
+    return null;
+  };
+
+  const refreshUser = async () => {
+    if (user) {
+      await fetchUserData(user);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthChange(async (firebaseUser) => {
       setUser(firebaseUser);
       
       if (firebaseUser) {
-        try {
-          // Get user data from our database using Firebase UID
-          const token = await firebaseUser.getIdToken();
-          const response = await fetch('/api/users/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          
-          if (response.ok) {
-            const userData = await response.json();
-            setDbUser(userData);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
+        await fetchUserData(firebaseUser);
       } else {
         setDbUser(null);
       }
@@ -71,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dbUser,
     loading,
     logout,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

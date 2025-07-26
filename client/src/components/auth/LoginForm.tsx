@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, X } from "lucide-react";
 import { signIn } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginFormProps {
   onClose: () => void;
@@ -19,6 +20,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { refreshUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +28,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
 
     try {
       await signIn(email, password);
+      // Refresh user data to trigger redirect
+      await refreshUser();
       toast({
         title: "Success",
         description: "Logged in successfully!",

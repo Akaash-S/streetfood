@@ -1,4 +1,5 @@
-import { Switch, Route, Redirect } from "wouter";
+import React from "react";
+import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,6 +35,24 @@ function ProtectedRoute({ component: Component, allowedRoles }: { component: Rea
 
 function AppRouter() {
   const { user, dbUser, loading } = useAuth();
+  const [location, setLocation] = useLocation();
+
+  // Handle automatic redirect after authentication
+  React.useEffect(() => {
+    if (!loading && user && dbUser && location === "/") {
+      switch (dbUser.role) {
+        case "vendor":
+          setLocation("/vendor-dashboard");
+          break;
+        case "shop_owner":
+          setLocation("/shop-owner-dashboard");
+          break;
+        case "delivery_agent":
+          setLocation("/delivery-agent-dashboard");
+          break;
+      }
+    }
+  }, [user, dbUser, loading, location, setLocation]);
 
   if (loading) {
     return (
@@ -46,15 +65,7 @@ function AppRouter() {
   return (
     <Switch>
       <Route path="/">
-        {user && dbUser ? (
-          // Redirect authenticated users to their dashboard
-          dbUser.role === "vendor" ? <Redirect to="/vendor-dashboard" /> :
-          dbUser.role === "shop_owner" ? <Redirect to="/shop-owner-dashboard" /> :
-          dbUser.role === "delivery_agent" ? <Redirect to="/delivery-agent-dashboard" /> :
-          <Landing />
-        ) : (
-          <Landing />
-        )}
+        <Landing />
       </Route>
       
       <Route path="/vendor-dashboard">

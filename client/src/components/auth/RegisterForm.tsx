@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X } from "lucide-react";
 import { signUp } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface RegisterFormProps {
   onClose: () => void;
@@ -26,6 +27,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { refreshUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +68,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
       });
 
       if (response.ok) {
+        // Refresh user data to trigger redirect
+        await refreshUser();
         toast({
           title: "Success",
           description: "Account created successfully!",
