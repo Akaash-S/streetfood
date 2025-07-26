@@ -106,60 +106,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Placeholder routes for future features
-  
-  // Shop routes (for shop owners)
-  app.get("/api/shops", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement get all shops
-    res.json({ message: "Get shops endpoint - to be implemented" });
+  // Shop routes
+  app.get("/api/shops", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const shops = await storage.getAllShops();
+      res.json(shops);
+    } catch (error: any) {
+      console.error("Get shops error:", error);
+      res.status(500).json({ message: "Failed to get shops" });
+    }
   });
 
-  app.post("/api/shops", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement create shop (for shop owners)
-    res.json({ message: "Create shop endpoint - to be implemented" });
+  // Order routes
+  app.get("/api/orders/vendor", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const orders = await storage.getOrdersByVendorId(req.user!.uid);
+      res.json(orders);
+    } catch (error: any) {
+      console.error("Get vendor orders error:", error);
+      res.status(500).json({ message: "Failed to get orders" });
+    }
   });
 
-  // Product routes (for shop owners)
-  app.get("/api/products", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement get products
-    res.json({ message: "Get products endpoint - to be implemented" });
+  app.get("/api/orders/shop", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const shops = await storage.getShopsByOwnerId(user.id);
+      let allOrders: any[] = [];
+      
+      for (const shop of shops) {
+        const orders = await storage.getOrdersByShopId(shop.id);
+        allOrders = [...allOrders, ...orders];
+      }
+      
+      res.json(allOrders);
+    } catch (error: any) {
+      console.error("Get shop orders error:", error);
+      res.status(500).json({ message: "Failed to get orders" });
+    }
   });
 
-  app.post("/api/products", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement create product
-    res.json({ message: "Create product endpoint - to be implemented" });
+  app.patch("/api/orders/:orderId/status", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { status } = req.body;
+      const order = await storage.updateOrderStatus(req.params.orderId, status);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(order);
+    } catch (error: any) {
+      console.error("Update order status error:", error);
+      res.status(500).json({ message: "Failed to update order status" });
+    }
   });
 
-  // Order routes (for vendors and shop owners)
-  app.get("/api/orders", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement get orders by user role
-    res.json({ message: "Get orders endpoint - to be implemented" });
+  // Delivery routes
+  app.get("/api/delivery/available", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const requests = await storage.getAvailableDeliveryRequests();
+      res.json(requests);
+    } catch (error: any) {
+      console.error("Get delivery requests error:", error);
+      res.status(500).json({ message: "Failed to get delivery requests" });
+    }
   });
 
-  app.post("/api/orders", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement create order (for vendors)
-    res.json({ message: "Create order endpoint - to be implemented" });
-  });
-
-  app.patch("/api/orders/:id/status", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement update order status (for shop owners)
-    res.json({ message: "Update order status endpoint - to be implemented" });
-  });
-
-  // Delivery routes (for delivery agents)
-  app.get("/api/deliveries", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement get available deliveries
-    res.json({ message: "Get deliveries endpoint - to be implemented" });
-  });
-
-  app.post("/api/deliveries/:id/accept", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement accept delivery
-    res.json({ message: "Accept delivery endpoint - to be implemented" });
-  });
-
-  app.patch("/api/deliveries/:id/status", verifyFirebaseToken, async (req, res) => {
-    // TODO: Implement update delivery status
-    res.json({ message: "Update delivery status endpoint - to be implemented" });
+  app.post("/api/delivery/:requestId/accept", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const request = await storage.acceptDeliveryRequest(req.params.requestId, req.user!.uid);
+      if (!request) {
+        return res.status(404).json({ message: "Delivery request not found" });
+      }
+      res.json(request);
+    } catch (error: any) {
+      console.error("Accept delivery request error:", error);
+      res.status(500).json({ message: "Failed to accept delivery request" });
+    }
   });
 
   const httpServer = createServer(app);

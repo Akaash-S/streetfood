@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, ShoppingCart, DollarSign, Heart, Calendar, Bell, Receipt } from "lucide-react";
+import { Store, ShoppingCart, DollarSign, Heart, Calendar, Bell } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ShopBrowser } from "@/components/vendor/ShopBrowser";
+import { RecentOrders } from "@/components/vendor/RecentOrders";
 
 export default function VendorDashboard() {
   const { dbUser, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const stats = [
     {
@@ -40,24 +43,7 @@ export default function VendorDashboard() {
     }
   ];
 
-  const recentOrders = [
-    {
-      shopName: "Fresh Mart Supplies",
-      orderNumber: "#12345",
-      date: "Dec 15, 2023",
-      total: "$234.50",
-      status: "Delivered",
-      statusColor: "bg-green-100 text-green-800"
-    },
-    {
-      shopName: "Quality Food Store",
-      orderNumber: "#12344",
-      date: "Dec 14, 2023",
-      total: "$189.25",
-      status: "In Transit",
-      statusColor: "bg-blue-100 text-blue-800"
-    }
-  ];
+  // Remove static data since we're using real API data now
 
   return (
     <motion.div
@@ -114,7 +100,11 @@ export default function VendorDashboard() {
           <p className="text-blue-100 mb-4">
             Ready to place some orders today? Browse our partner shops and restock your inventory.
           </p>
-          <Button variant="secondary" className="bg-white text-blue-600 hover:bg-blue-50">
+          <Button 
+            variant="secondary" 
+            className="bg-white text-blue-600 hover:bg-blue-50"
+            onClick={() => setActiveTab("shops")}
+          >
             Browse Shops
           </Button>
         </motion.div>
@@ -143,43 +133,58 @@ export default function VendorDashboard() {
           ))}
         </motion.div>
 
-        {/* Recent Orders */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Card className="bg-surface border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-secondary">Recent Orders</h3>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {recentOrders.map((order, index) => (
-                <div key={index} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <Receipt className="text-gray-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-secondary">{order.shopName}</p>
-                        <p className="text-sm text-gray-600">
-                          {order.orderNumber} • {order.date}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-secondary">{order.total}</p>
-                      <Badge className={`${order.statusColor} text-xs`}>
-                        {order.status}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
+        {/* Navigation Tabs */}
+        <div className="flex space-x-4 mb-8">
+          <Button
+            variant={activeTab === "dashboard" ? "default" : "outline"}
+            onClick={() => setActiveTab("dashboard")}
+          >
+            Dashboard
+          </Button>
+          <Button
+            variant={activeTab === "shops" ? "default" : "outline"}
+            onClick={() => setActiveTab("shops")}
+          >
+            Browse Shops
+          </Button>
+          <Button
+            variant={activeTab === "orders" ? "default" : "outline"}
+            onClick={() => setActiveTab("orders")}
+          >
+            My Orders
+          </Button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "dashboard" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <RecentOrders />
+          </motion.div>
+        )}
+
+        {activeTab === "shops" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <ShopBrowser />
+          </motion.div>
+        )}
+
+        {activeTab === "orders" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <RecentOrders />
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );

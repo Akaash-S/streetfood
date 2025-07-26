@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bike, Truck, DollarSign, CheckCircle, Star, Bell, MapPin, Map } from "lucide-react";
+import { Bike, Truck, DollarSign, CheckCircle, Star, Bell } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { AvailableDeliveries } from "@/components/delivery/AvailableDeliveries";
 
 export default function DeliveryAgentDashboard() {
   const { dbUser, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const stats = [
     {
@@ -118,7 +120,11 @@ export default function DeliveryAgentDashboard() {
           <p className="text-purple-100 mb-4">
             You have new delivery requests available. Start earning with efficient routes!
           </p>
-          <Button variant="secondary" className="bg-white text-purple-600 hover:bg-purple-50">
+          <Button 
+            variant="secondary" 
+            className="bg-white text-purple-600 hover:bg-purple-50"
+            onClick={() => setActiveTab("deliveries")}
+          >
             View Requests
           </Button>
         </motion.div>
@@ -147,53 +153,61 @@ export default function DeliveryAgentDashboard() {
           ))}
         </motion.div>
 
-        {/* Available Delivery Requests */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Card className="bg-surface border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-secondary">Available Delivery Requests</h3>
-              <Button variant="ghost" className="text-primary hover:text-primary/80 font-medium">
-                Refresh
-              </Button>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {availableDeliveries.map((delivery, index) => (
-                <div key={index} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <MapPin className="text-gray-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-secondary">{delivery.route}</p>
-                        <p className="text-sm text-gray-600">
-                          {delivery.distance} • Est. {delivery.estimatedTime} • {delivery.orderNumber}
-                        </p>
-                        <p className="text-xs text-gray-500">Posted {delivery.postedTime}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="text-right">
-                        <p className="font-semibold text-secondary">{delivery.fee}</p>
-                        <p className="text-xs text-gray-500">Delivery fee</p>
-                      </div>
-                      <Button className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        Accept
-                      </Button>
-                      <Button variant="outline" size="icon" className="p-2">
-                        <Map className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
+        {/* Navigation Tabs */}
+        <div className="flex space-x-4 mb-8">
+          <Button
+            variant={activeTab === "dashboard" ? "default" : "outline"}
+            onClick={() => setActiveTab("dashboard")}
+          >
+            Dashboard
+          </Button>
+          <Button
+            variant={activeTab === "deliveries" ? "default" : "outline"}
+            onClick={() => setActiveTab("deliveries")}
+          >
+            Available Deliveries
+          </Button>
+          <Button
+            variant={activeTab === "earnings" ? "default" : "outline"}
+            onClick={() => setActiveTab("earnings")}
+          >
+            Earnings
+          </Button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "dashboard" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <AvailableDeliveries />
+          </motion.div>
+        )}
+
+        {activeTab === "deliveries" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <AvailableDeliveries />
+          </motion.div>
+        )}
+
+        {activeTab === "earnings" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Earnings Overview</h3>
+              <p className="text-gray-600">Coming soon: Detailed earnings tracking and history</p>
+            </Card>
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );
