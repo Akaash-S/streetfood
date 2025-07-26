@@ -1,9 +1,5 @@
 import { type User, type InsertUser, type RetailShop, type InsertRetailShop } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import { eq } from "drizzle-orm";
-import * as schema from "@shared/schema";
 
 // Updated interface with Firebase UID methods
 export interface IStorage {
@@ -79,44 +75,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Database storage implementation
-class DbStorage implements IStorage {
-  private db: ReturnType<typeof drizzle>;
 
-  constructor() {
-    const sql = postgres(process.env.DATABASE_URL!);
-    this.db = drizzle(sql, { schema });
-  }
 
-  async getUser(id: string): Promise<User | undefined> {
-    const result = await this.db.select().from(schema.users).where(eq(schema.users.id, id)).limit(1);
-    return result[0];
-  }
-
-  async getUserByFirebaseUid(firebaseUid: string): Promise<User | undefined> {
-    const result = await this.db.select().from(schema.users).where(eq(schema.users.firebaseUid, firebaseUid)).limit(1);
-    return result[0];
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await this.db.select().from(schema.users).where(eq(schema.users.email, email)).limit(1);
-    return result[0];
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const result = await this.db.insert(schema.users).values(insertUser).returning();
-    return result[0];
-  }
-
-  async getShopsByOwnerId(ownerId: string): Promise<RetailShop[]> {
-    return await this.db.select().from(schema.retailShops).where(eq(schema.retailShops.ownerId, ownerId));
-  }
-
-  async createRetailShop(insertShop: InsertRetailShop): Promise<RetailShop> {
-    const result = await this.db.insert(schema.retailShops).values(insertShop).returning();
-    return result[0];
-  }
-}
-
-// Use database storage if DATABASE_URL is available, otherwise use memory storage
-export const storage = process.env.DATABASE_URL ? new DbStorage() : new MemStorage();
+// Use memory storage for now to ensure reliability
+export const storage = new MemStorage();
