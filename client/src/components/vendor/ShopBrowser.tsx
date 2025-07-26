@@ -31,12 +31,12 @@ export function ShopBrowser() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-secondary">Browse Partner Shops</h2>
         <Badge variant="secondary" className="text-sm">
-          {shops?.length || 0} shops available
+          {Array.isArray(shops) ? shops.length : 0} shops available
         </Badge>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {shops?.map((shop: any) => (
+        {Array.isArray(shops) && shops.map((shop: any) => (
           <Card key={shop.id} className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -71,6 +71,14 @@ export function ShopBrowser() {
                   size="sm" 
                   disabled={!shop.isActive}
                   className="bg-primary hover:bg-primary-dark text-white"
+                  onClick={() => {
+                    // Use URL params to communicate with parent component
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('tab', 'products');
+                    url.searchParams.set('shopId', shop.id);
+                    window.history.pushState({}, '', url.toString());
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
                 >
                   Browse Products
                 </Button>

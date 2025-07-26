@@ -73,14 +73,14 @@ export function RecentOrders() {
         </Button>
       </div>
       <div className="divide-y divide-gray-200">
-        {orders?.length === 0 ? (
+        {!Array.isArray(orders) || orders.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
             <Receipt className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p>No orders yet</p>
             <p className="text-sm">Start ordering from partner shops!</p>
           </div>
         ) : (
-          orders?.map((order: any) => (
+          orders.map((order: any) => (
             <div key={order.id} className="p-6 hover:bg-gray-50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">

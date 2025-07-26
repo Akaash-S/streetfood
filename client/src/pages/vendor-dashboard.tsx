@@ -7,10 +7,45 @@ import { Store, ShoppingCart, DollarSign, Heart, Calendar, Bell } from "lucide-r
 import { useAuth } from "@/contexts/AuthContext";
 import { ShopBrowser } from "@/components/vendor/ShopBrowser";
 import { RecentOrders } from "@/components/vendor/RecentOrders";
+import { VendorCart, CartProvider } from "@/components/vendor/VendorCart";
+import { ProductBrowser } from "@/components/vendor/ProductBrowser";
+import { VendorProfile } from "@/components/vendor/VendorProfile";
+import { OrderHistory } from "@/components/vendor/OrderHistory";
 
 export default function VendorDashboard() {
   const { dbUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedShopId, setSelectedShopId] = useState<string | null>(null);
+
+  // Handle URL parameters for shop selection
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    const shopId = params.get('shopId');
+    
+    if (tab) {
+      setActiveTab(tab);
+    }
+    if (shopId) {
+      setSelectedShopId(shopId);
+    }
+
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      const shopId = params.get('shopId');
+      
+      if (tab) {
+        setActiveTab(tab);
+      }
+      if (shopId) {
+        setSelectedShopId(shopId);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const stats = [
     {
@@ -46,12 +81,13 @@ export default function VendorDashboard() {
   // Remove static data since we're using real API data now
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen bg-background"
-    >
+    <CartProvider>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen bg-background"
+      >
       {/* Dashboard Header */}
       <header className="bg-surface shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -134,7 +170,7 @@ export default function VendorDashboard() {
         </motion.div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-4 mb-8">
+        <div className="flex flex-wrap gap-2 mb-8">
           <Button
             variant={activeTab === "dashboard" ? "default" : "outline"}
             onClick={() => setActiveTab("dashboard")}
@@ -148,44 +184,90 @@ export default function VendorDashboard() {
             Browse Shops
           </Button>
           <Button
+            variant={activeTab === "products" ? "default" : "outline"}
+            onClick={() => setActiveTab("products")}
+          >
+            Products
+          </Button>
+          <Button
             variant={activeTab === "orders" ? "default" : "outline"}
             onClick={() => setActiveTab("orders")}
           >
-            My Orders
+            Order History
+          </Button>
+          <Button
+            variant={activeTab === "profile" ? "default" : "outline"}
+            onClick={() => setActiveTab("profile")}
+          >
+            Profile
           </Button>
         </div>
 
         {/* Tab Content */}
-        {activeTab === "dashboard" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <RecentOrders />
-          </motion.div>
-        )}
+        <div className="flex gap-8">
+          <div className="flex-1">
+            {activeTab === "dashboard" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <RecentOrders />
+              </motion.div>
+            )}
 
-        {activeTab === "shops" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <ShopBrowser />
-          </motion.div>
-        )}
+            {activeTab === "shops" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <ShopBrowser />
+              </motion.div>
+            )}
 
-        {activeTab === "orders" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <RecentOrders />
-          </motion.div>
-        )}
-      </div>
-    </motion.div>
+            {activeTab === "products" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <ProductBrowser shopId={selectedShopId} />
+              </motion.div>
+            )}
+
+            {activeTab === "orders" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <OrderHistory />
+              </motion.div>
+            )}
+
+            {activeTab === "profile" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <VendorProfile />
+              </motion.div>
+            )}
+          </div>
+
+          {/* Cart Sidebar - Show only when not on profile tab */}
+          {activeTab !== "profile" && (
+            <div className="w-80">
+              <div className="sticky top-8">
+                <VendorCart />
+              </div>
+            </div>
+          )}
+        </div>
+        </div>
+      </motion.div>
+    </CartProvider>
   );
 }

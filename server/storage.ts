@@ -17,6 +17,7 @@ export interface IStorage {
 
   // Product methods
   getProductsByShopId(shopId: string): Promise<any[]>;
+  getAllProducts(): Promise<any[]>;
   createProduct(product: any): Promise<any>;
   updateProduct(id: string, updates: any): Promise<any>;
 
@@ -130,6 +131,53 @@ export class PersistentStorage implements IStorage {
   }
 
   private seedData() {
+    // Add vendor user if not exists
+    const vendorExists = Array.from(this.users.values()).some(user => user.role === 'vendor');
+    if (!vendorExists) {
+      const vendor: User = {
+        id: randomUUID(),
+        firebaseUid: 'vendor-dev-uid',
+        email: 'vendor@example.com',
+        firstName: 'Mike',
+        lastName: 'Rodriguez',
+        phone: '+1-555-0103',
+        role: 'vendor',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.users.set(vendor.id, vendor);
+    }
+
+    // Add shop owners if not exist
+    const shopOwner1Exists = Array.from(this.users.values()).some(user => user.firebaseUid === 'shop-owner-uid');
+    if (!shopOwner1Exists) {
+      const shopOwner1: User = {
+        id: 'owner1',
+        firebaseUid: 'shop-owner-uid',
+        email: 'owner@example.com',
+        firstName: 'Sarah',
+        lastName: 'Johnson',
+        phone: '+1-555-0102',
+        role: 'shop_owner',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.users.set(shopOwner1.id, shopOwner1);
+
+      const shopOwner2: User = {
+        id: 'owner2',
+        firebaseUid: 'shop-owner-uid-2',
+        email: 'owner2@example.com',
+        firstName: 'Carlos',
+        lastName: 'Martinez',
+        phone: '+1-555-0104',
+        role: 'shop_owner',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.users.set(shopOwner2.id, shopOwner2);
+    }
+
     // Seed some sample data for demonstration
     const sampleShops = [
       { id: "shop1", shopName: "Fresh Mart Supplies", address: "Downtown Market", ownerId: "owner1", phone: "+1-555-0101", isActive: true, averageRating: "4.8", createdAt: new Date(), updatedAt: new Date() },
@@ -137,9 +185,14 @@ export class PersistentStorage implements IStorage {
     ];
 
     const sampleProducts = [
-      { id: "prod1", shopId: "shop1", name: "Fresh Tomatoes", description: "Organic tomatoes", price: 3.50, category: "Vegetables", stock: 100, isAvailable: true, createdAt: new Date(), updatedAt: new Date() },
-      { id: "prod2", shopId: "shop1", name: "Premium Rice", description: "Basmati rice 5kg", price: 12.99, category: "Grains", stock: 50, isAvailable: true, createdAt: new Date(), updatedAt: new Date() },
-      { id: "prod3", shopId: "shop2", name: "Cooking Oil", description: "Sunflower oil 1L", price: 4.25, category: "Oils", stock: 75, isAvailable: true, createdAt: new Date(), updatedAt: new Date() }
+      { id: "prod1", shopId: "shop1", name: "Fresh Tomatoes", description: "Organic red tomatoes perfect for street food", price: 3.50, stockQuantity: 100, unit: "kg", isActive: true, shopName: "Fresh Mart Supplies", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod2", shopId: "shop1", name: "Premium Rice", description: "Basmati rice 5kg bag", price: 12.99, stockQuantity: 50, unit: "bags", isActive: true, shopName: "Fresh Mart Supplies", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod3", shopId: "shop1", name: "Onions", description: "Fresh yellow onions", price: 2.25, stockQuantity: 80, unit: "kg", isActive: true, shopName: "Fresh Mart Supplies", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod4", shopId: "shop1", name: "Bell Peppers", description: "Mixed color bell peppers", price: 4.50, stockQuantity: 60, unit: "kg", isActive: true, shopName: "Fresh Mart Supplies", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod5", shopId: "shop2", name: "Cooking Oil", description: "Sunflower oil 1L bottle", price: 4.25, stockQuantity: 75, unit: "bottles", isActive: true, shopName: "Quality Food Store", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod6", shopId: "shop2", name: "Chicken Breast", description: "Fresh chicken breast fillets", price: 8.99, stockQuantity: 25, unit: "kg", isActive: true, shopName: "Quality Food Store", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod7", shopId: "shop2", name: "Bread Rolls", description: "Fresh hamburger buns", price: 1.99, stockQuantity: 120, unit: "packs", isActive: true, shopName: "Quality Food Store", createdAt: new Date(), updatedAt: new Date() },
+      { id: "prod8", shopId: "shop2", name: "Cheese Slices", description: "Processed cheese slices", price: 3.49, stockQuantity: 40, unit: "packs", isActive: true, shopName: "Quality Food Store", createdAt: new Date(), updatedAt: new Date() }
     ];
 
     const sampleOrders = [
@@ -242,6 +295,10 @@ export class PersistentStorage implements IStorage {
   // Product methods
   async getProductsByShopId(shopId: string): Promise<any[]> {
     return Array.from(this.products.values()).filter(product => product.shopId === shopId);
+  }
+
+  async getAllProducts(): Promise<any[]> {
+    return Array.from(this.products.values());
   }
 
   async createProduct(product: any): Promise<any> {

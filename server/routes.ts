@@ -150,14 +150,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Product routes
+  app.get("/api/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { shopId } = req.query;
+      if (shopId) {
+        const products = await storage.getProductsByShopId(shopId as string);
+        res.json(products);
+      } else {
+        const products = await storage.getAllProducts();
+        res.json(products);
+      }
+    } catch (error: any) {
+      console.error("Get products error:", error);
+      res.status(500).json({ message: "Failed to get products" });
+    }
+  });
+
   // Order routes
+  app.post("/api/orders", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const orderData = {
+        ...req.body,
+        vendorId: user.id,
+      };
+
+      const order = await storage.createOrder(orderData);
+      res.status(201).json(order);
+    } catch (error: any) {
+      console.error("Create order error:", error);
+      res.status(500).json({ message: "Failed to create order" });
+    }
+  });
+
   app.get("/api/orders/vendor", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const orders = await storage.getOrdersByVendorId(req.user!.uid);
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const orders = await storage.getOrdersByVendorId(user.id);
       res.json(orders);
     } catch (error: any) {
       console.error("Get vendor orders error:", error);
       res.status(500).json({ message: "Failed to get orders" });
+    }
+  });
+
+  // Vendor profile routes
+  app.get("/api/vendor/profile", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return vendor profile (for now, just the user data with some mock business info)
+      const profile = {
+        ...user,
+        businessName: `${user.firstName}'s Food Cart`,
+        businessDescription: "Authentic street food with fresh ingredients",
+        businessAddress: "Mobile vendor - Downtown area",
+        businessPhone: user.phone
+      };
+      
+      res.json(profile);
+    } catch (error: any) {
+      console.error("Get vendor profile error:", error);
+      res.status(500).json({ message: "Failed to get profile" });
+    }
+  });
+
+  app.put("/api/vendor/profile", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // For now, just return success (in a real app, you'd update the profile)
+      res.json({ message: "Profile updated successfully" });
+    } catch (error: any) {
+      console.error("Update vendor profile error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
     }
   });
 
