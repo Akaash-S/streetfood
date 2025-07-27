@@ -13,7 +13,7 @@ interface Product {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: string | number;
   stockQuantity: number;
   unit: string;
   distributorId: string;
@@ -82,7 +82,7 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
       id: `${product.id}-${Date.now()}`,
       productId: product.id,
       name: product.name,
-      price: product.price,
+      price: Number(product.price),
       unit: product.unit,
       shopId: product.distributorId,
       shopName: product.category,
@@ -184,7 +184,7 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <p className="text-lg font-bold text-primary">
-                        ${product.price.toFixed(2)}/{product.unit}
+                        ${Number(product.price).toFixed(2)}/{product.unit}
                       </p>
                       <div className="flex items-center gap-2">
                         <Badge 

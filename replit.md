@@ -5,6 +5,14 @@
 This is a simplified Street Food Ecosystem Platform that connects street food vendors, delivery agents, and distributors in a direct supply chain. The application provides role-based dashboards for each of the three user types and facilitates wholesale ordering, product management, and delivery coordination without intermediary retail shops.
 
 ## Recent Changes
+- **2025-07-27**: ✅ **DYNAMIC VENDOR SYSTEM**: Updated street vendor role to be fully dynamic
+  - Vendors now browse actual registered distributors instead of fixed shops
+  - Distributors show their company names in vendor's browse distributors dashboard
+  - Added backend routes for vendors to browse distributors and their products
+  - Fixed product price display issue (converting string to number for .toFixed())
+  - Enhanced cart and order system to work with distributor-based ordering
+  - Updated all UI labels from "Browse Shops" to "Browse Distributors"
+  - Firebase authentication properly configured for email/password login and registration
 - **2025-07-27**: ✅ **CLEAN ARCHITECTURE**: Removed all mock/demo data and simplified to three-role system
   - Removed retail shop owner role and all related functionality
   - Updated system to support only: street_vendor, delivery_agent, distributor
