@@ -41,7 +41,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
 
       if (!response.ok) {
         if (response.status === 404) {
-          // User not found in database, but exists in Firebase - redirect to complete registration
+          const errorData = await response.json();
+          if (errorData.needsRegistration) {
+            // User exists in Firebase but not in database - show registration form
+            toast({
+              title: "Complete Registration",
+              description: "Please complete your profile information to access your account.",
+              variant: "destructive",
+            });
+            onClose();
+            onSwitchToRegister();
+            return;
+          }
           throw new Error('Please complete your registration by filling out your profile information.');
         }
         const errorData = await response.json();

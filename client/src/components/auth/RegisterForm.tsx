@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
-import { signUp } from "@/lib/firebase";
+import { signUp, signIn } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -45,11 +45,26 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
     }
 
     try {
-      // Create Firebase user
-      const userCredential = await signUp(formData.email, formData.password);
+      let userCredential;
+      let token;
       
-      // Get Firebase token to authenticate with our backend
-      const token = await userCredential.user.getIdToken();
+      try {
+        // Try to create Firebase user
+        userCredential = await signUp(formData.email, formData.password);
+        token = await userCredential.user.getIdToken();
+      } catch (firebaseError: any) {
+        if (firebaseError.code === 'auth/email-already-in-use') {
+          // User already exists in Firebase, try to sign them in
+          try {
+            userCredential = await signIn(formData.email, formData.password);
+            token = await userCredential.user.getIdToken();
+          } catch (signInError) {
+            throw new Error('Email already registered. Please use the login form or reset your password.');
+          }
+        } else {
+          throw firebaseError;
+        }
+      }
       
       // Create user in our database
       const response = await fetch('/api/auth/register', {

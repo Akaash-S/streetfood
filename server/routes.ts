@@ -92,6 +92,23 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Login endpoint
+  app.post("/api/auth/login", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ 
+          message: "User not found in database. Please complete registration.",
+          needsRegistration: true 
+        });
+      }
+      res.json({ message: "Login successful", user });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
   // Get current user info
   app.get("/api/users/me", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
