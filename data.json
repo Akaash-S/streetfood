@@ -130,8 +130,8 @@
       "phone": "+1-555-0101",
       "isActive": true,
       "averageRating": "4.8",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "shop2": {
       "id": "shop2",
@@ -141,8 +141,8 @@
       "phone": "+1-555-0102",
       "isActive": true,
       "averageRating": "4.6",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     }
   },
   "products": {
@@ -156,8 +156,8 @@
       "unit": "kg",
       "isActive": true,
       "shopName": "Fresh Mart Supplies",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod2": {
       "id": "prod2",
@@ -169,8 +169,8 @@
       "unit": "bags",
       "isActive": true,
       "shopName": "Fresh Mart Supplies",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod3": {
       "id": "prod3",
@@ -182,8 +182,8 @@
       "unit": "kg",
       "isActive": true,
       "shopName": "Fresh Mart Supplies",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod4": {
       "id": "prod4",
@@ -195,8 +195,8 @@
       "unit": "kg",
       "isActive": true,
       "shopName": "Fresh Mart Supplies",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod5": {
       "id": "prod5",
@@ -208,8 +208,8 @@
       "unit": "bottles",
       "isActive": true,
       "shopName": "Quality Food Store",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod6": {
       "id": "prod6",
@@ -221,8 +221,8 @@
       "unit": "kg",
       "isActive": true,
       "shopName": "Quality Food Store",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod7": {
       "id": "prod7",
@@ -234,8 +234,8 @@
       "unit": "packs",
       "isActive": true,
       "shopName": "Quality Food Store",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "prod8": {
       "id": "prod8",
@@ -247,8 +247,8 @@
       "unit": "packs",
       "isActive": true,
       "shopName": "Quality Food Store",
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     }
   },
   "orders": {
@@ -267,7 +267,7 @@
         }
       ],
       "createdAt": "2024-12-15T00:00:00.000Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "order2": {
       "id": "order2",
@@ -284,7 +284,7 @@
         }
       ],
       "createdAt": "2024-12-14T00:00:00.000Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     }
   },
   "deliveryRequests": {
@@ -297,8 +297,8 @@
       "fee": 9.75,
       "status": "available",
       "agentId": null,
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     }
   },
   "wholesaleProducts": {
@@ -313,8 +313,8 @@
       "unit": "bags",
       "minimumOrderQuantity": 5,
       "isActive": true,
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "wp2": {
       "id": "wp2",
@@ -327,8 +327,8 @@
       "unit": "containers",
       "minimumOrderQuantity": 2,
       "isActive": true,
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "wp3": {
       "id": "wp3",
@@ -341,8 +341,8 @@
       "unit": "boxes",
       "minimumOrderQuantity": 1,
       "isActive": true,
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "135e68ff-fb2b-43cf-aca9-54dfd70f327d": {
       "name": "Sample 01",
@@ -357,6 +357,62 @@
       "id": "135e68ff-fb2b-43cf-aca9-54dfd70f327d",
       "createdAt": "2025-07-27T12:45:36.230Z",
       "updatedAt": "2025-07-27T12:45:36.230Z"
+    },
+    "wp4": {
+      "id": "wp4",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Organic Chicken Breast (15kg)",
+      "description": "Fresh organic chicken breast for restaurants",
+      "category": "Meat",
+      "price": 75,
+      "stockQuantity": 45,
+      "unit": "boxes",
+      "minimumOrderQuantity": 3,
+      "isActive": true,
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "wp5": {
+      "id": "wp5",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Dairy Milk (50L)",
+      "description": "Fresh pasteurized milk in bulk containers",
+      "category": "Dairy",
+      "price": 65.5,
+      "stockQuantity": 85,
+      "unit": "containers",
+      "minimumOrderQuantity": 2,
+      "isActive": true,
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "wp6": {
+      "id": "wp6",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "name": "Wheat Flour (30kg)",
+      "description": "Premium quality wheat flour for bakeries",
+      "category": "Grains",
+      "price": 32.99,
+      "stockQuantity": 120,
+      "unit": "sacks",
+      "minimumOrderQuantity": 4,
+      "isActive": true,
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "67478593-2f23-4e81-9c66-5a8b82db8c67": {
+      "name": "Sample 01",
+      "description": "qweioasdfghjklxcvbnm",
+      "category": "Vegetables",
+      "price": 200,
+      "stockQuantity": 200,
+      "unit": "kg",
+      "minimumOrderQuantity": 20,
+      "isActive": true,
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "id": "67478593-2f23-4e81-9c66-5a8b82db8c67",
+      "createdAt": "2025-07-27T12:59:41.384Z",
+      "updatedAt": "2025-07-27T12:59:41.384Z"
     }
   },
   "bulkOrders": {
@@ -368,10 +424,10 @@
       "status": "processing",
       "totalAmount": 2450,
       "deliveryAddress": "Downtown Market",
-      "estimatedDeliveryDate": "2025-01-17T00:00:00.000Z",
+      "estimatedDeliveryDate": "2025-02-02T00:00:00.000Z",
       "notes": "Urgent delivery needed",
       "createdAt": "2025-01-15T00:00:00.000Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "bo2": {
       "id": "bo2",
@@ -381,10 +437,36 @@
       "status": "shipped",
       "totalAmount": 1890.75,
       "deliveryAddress": "Central Plaza",
-      "estimatedDeliveryDate": "2025-01-16T00:00:00.000Z",
+      "estimatedDeliveryDate": "2025-01-30T00:00:00.000Z",
       "notes": "",
       "createdAt": "2025-01-14T00:00:00.000Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "bo3": {
+      "id": "bo3",
+      "shopId": "shop1",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "orderNumber": "#BLK-12347",
+      "status": "pending",
+      "totalAmount": 3200,
+      "deliveryAddress": "Food Street Complex",
+      "estimatedDeliveryDate": "2025-02-05T00:00:00.000Z",
+      "notes": "Include extra packaging",
+      "createdAt": "2025-01-27T00:00:00.000Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "bo4": {
+      "id": "bo4",
+      "shopId": "shop2",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "orderNumber": "#BLK-12348",
+      "status": "delivered",
+      "totalAmount": 1250.5,
+      "deliveryAddress": "Market Square",
+      "estimatedDeliveryDate": "2025-01-28T00:00:00.000Z",
+      "notes": "Regular monthly order",
+      "createdAt": "2025-01-20T00:00:00.000Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     }
   },
   "shopDeliveries": {
@@ -396,10 +478,10 @@
       "driverId": null,
       "vehicleNumber": "TRK-001",
       "status": "scheduled",
-      "scheduledDate": "2025-01-17T00:00:00.000Z",
+      "scheduledDate": "2025-02-02T00:00:00.000Z",
       "deliveredDate": null,
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     },
     "sd2": {
       "id": "sd2",
@@ -409,10 +491,36 @@
       "driverId": null,
       "vehicleNumber": "TRK-002",
       "status": "in_transit",
-      "scheduledDate": "2025-01-16T00:00:00.000Z",
+      "scheduledDate": "2025-01-30T00:00:00.000Z",
       "deliveredDate": null,
-      "createdAt": "2025-07-27T12:42:28.252Z",
-      "updatedAt": "2025-07-27T12:42:28.252Z"
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "sd3": {
+      "id": "sd3",
+      "orderId": "bo3",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "shopId": "shop1",
+      "driverId": null,
+      "vehicleNumber": "TRK-003",
+      "status": "scheduled",
+      "scheduledDate": "2025-02-05T00:00:00.000Z",
+      "deliveredDate": null,
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
+    },
+    "sd4": {
+      "id": "sd4",
+      "orderId": "bo4",
+      "distributorId": "86FrXYYSpcYgRa8KyV9NSs74HMv1",
+      "shopId": "shop2",
+      "driverId": null,
+      "vehicleNumber": "TRK-001",
+      "status": "delivered",
+      "scheduledDate": "2025-01-28T00:00:00.000Z",
+      "deliveredDate": "2025-01-28T00:00:00.000Z",
+      "createdAt": "2025-07-27T12:57:59.930Z",
+      "updatedAt": "2025-07-27T12:57:59.930Z"
     }
   }
 }
