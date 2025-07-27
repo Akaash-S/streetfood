@@ -32,18 +32,32 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
   const { addItem } = useCart();
   const { toast } = useToast();
 
-  const { data: products, isLoading } = useQuery({
+  // Debug: Log current state
+  console.log('ProductBrowser - distributorId:', distributorId);
+
+  const { data: products, isLoading, error } = useQuery({
     queryKey: ['/api/vendor/products', distributorId],
     enabled: !!distributorId,
     queryFn: async () => {
       const token = localStorage.getItem('firebaseToken');
+      console.log('Fetching products for distributor:', distributorId);
+      console.log('Using token:', token ? 'Token present' : 'No token');
+      
       const response = await fetch(`/api/vendor/products/${distributorId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (!response.ok) throw new Error('Failed to fetch products');
-      return response.json();
+      
+      console.log('Products response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Products fetch error:', errorText);
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      console.log('Products data received:', data);
+      return data;
     }
   });
 
@@ -104,6 +118,17 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
     });
   };
 
+  // Show message when no distributor is selected
+  if (!distributorId) {
+    return (
+      <div className="text-center py-12">
+        <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+        <p className="text-gray-500">Select a distributor to view their products</p>
+        <p className="text-sm text-gray-400">Go to "Browse Distributors" tab to choose a supplier</p>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -123,6 +148,17 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
             </Card>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <Package className="h-12 w-12 text-red-300 mx-auto mb-4" />
+        <p className="text-red-500">Failed to load products</p>
+        <p className="text-sm text-gray-400">Please try refreshing the page</p>
       </div>
     );
   }
