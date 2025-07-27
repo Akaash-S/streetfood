@@ -66,7 +66,8 @@ function AppRouter() {
   return (
     <Switch>
       <Route path="/">
-        <Landing />
+        {/* Show landing page only if not authenticated, otherwise redirect */}
+        {!user || !dbUser ? <Landing /> : <Redirect to={`/${dbUser.role === 'street_vendor' ? 'vendor' : dbUser.role === 'delivery_agent' ? 'delivery-agent' : 'distributor'}-dashboard`} />}
       </Route>
       
       <Route path="/vendor-dashboard">

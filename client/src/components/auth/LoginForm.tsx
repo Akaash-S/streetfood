@@ -55,11 +55,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
         description: "Logged in successfully! Redirecting...",
       });
       onClose();
-      
-      // Force page refresh to trigger redirect
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (error: any) {
       toast({
         title: "Error",

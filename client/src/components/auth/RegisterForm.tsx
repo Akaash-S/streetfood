@@ -77,11 +77,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
           description: "Account created successfully! Redirecting...",
         });
         onClose();
-        
-        // Force page refresh to trigger redirect
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
       } else {
         const error = await response.json();
         throw new Error(error.message);

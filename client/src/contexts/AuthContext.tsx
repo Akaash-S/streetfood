@@ -69,21 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     });
 
-    // Development fallback - auto-login vendor user
-    if (!auth.currentUser && import.meta.env.DEV) {
-      setTimeout(() => {
-        // Simulate logged in vendor user for development
-        const mockUser = {
-          uid: 'vendor-dev-uid',
-          email: 'vendor@example.com',
-          getIdToken: () => Promise.resolve('test-token')
-        } as any;
-        
-        setUser(mockUser);
-        fetchUserData(mockUser);
-        setLoading(false);
-      }, 1000);
-    }
+    // No development fallback - use actual authentication only
 
     return unsubscribe;
   }, []);
