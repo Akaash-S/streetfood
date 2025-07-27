@@ -41,6 +41,16 @@ export function OrderHistory() {
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ['/api/orders/vendor'],
+    queryFn: async () => {
+      const token = localStorage.getItem('firebaseToken');
+      const response = await fetch('/api/orders/vendor', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch orders');
+      return response.json();
+    }
   });
 
   const getStatusIcon = (status: string) => {

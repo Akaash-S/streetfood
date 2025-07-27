@@ -9,6 +9,16 @@ import { User } from "@shared/schema";
 export function ShopBrowser() {
   const { data: distributors, isLoading } = useQuery({
     queryKey: ['/api/vendor/distributors'],
+    queryFn: async () => {
+      const token = localStorage.getItem('firebaseToken');
+      const response = await fetch('/api/vendor/distributors', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch distributors');
+      return response.json();
+    }
   });
 
   if (isLoading) {

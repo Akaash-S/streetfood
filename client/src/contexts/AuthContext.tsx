@@ -29,6 +29,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserData = async (firebaseUser: User) => {
     try {
       const token = await firebaseUser.getIdToken();
+      
+      // Store token in localStorage for other components to use
+      localStorage.setItem('firebaseToken', token);
+      
       const response = await fetch('/api/users/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -42,10 +46,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         console.error("Failed to fetch user data:", response.status);
         setDbUser(null);
+        localStorage.removeItem('firebaseToken');
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
       setDbUser(null);
+      localStorage.removeItem('firebaseToken');
     }
     return null;
   };
@@ -79,6 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await firebaseLogout();
       setUser(null);
       setDbUser(null);
+      localStorage.removeItem('firebaseToken');
     } catch (error) {
       console.error("Error signing out:", error);
     }

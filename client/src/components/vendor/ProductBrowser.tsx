@@ -35,6 +35,16 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
   const { data: products, isLoading } = useQuery({
     queryKey: ['/api/vendor/products', distributorId],
     enabled: !!distributorId,
+    queryFn: async () => {
+      const token = localStorage.getItem('firebaseToken');
+      const response = await fetch(`/api/vendor/products?distributorId=${distributorId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch products');
+      return response.json();
+    }
   });
 
   const filteredProducts = React.useMemo(() => {

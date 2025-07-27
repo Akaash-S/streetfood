@@ -29,15 +29,26 @@ export function VendorProfile() {
   const { data: vendorProfile } = useQuery({
     queryKey: ['/api/vendor/profile'],
     enabled: !!dbUser,
+    queryFn: async () => {
+      const token = localStorage.getItem('firebaseToken');
+      const response = await fetch('/api/vendor/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch profile');
+      return response.json();
+    }
   });
 
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch('/api/vendor/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await (window as any).firebase?.auth()?.currentUser?.getIdToken?.() || 'test-token'}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(profileData),
       });
@@ -80,10 +91,10 @@ export function VendorProfile() {
       lastName: dbUser?.lastName || "",
       phone: dbUser?.phone || "",
       email: dbUser?.email || "",
-      businessName: vendorProfile?.businessName || "",
-      businessDescription: vendorProfile?.businessDescription || "",
-      businessAddress: vendorProfile?.businessAddress || "",
-      businessPhone: vendorProfile?.businessPhone || "",
+      businessName: (vendorProfile as any)?.businessName || "",
+      businessDescription: (vendorProfile as any)?.businessDescription || "",
+      businessAddress: (vendorProfile as any)?.businessAddress || "",
+      businessPhone: (vendorProfile as any)?.businessPhone || "",
     });
     setIsEditing(false);
   };

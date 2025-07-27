@@ -33,7 +33,7 @@ export default function DistributorDashboard() {
     queryKey: ['/api/distributor/products'],
     enabled: !!dbUser,
     queryFn: async () => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch('/api/distributor/products', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -47,7 +47,7 @@ export default function DistributorDashboard() {
     queryKey: ['/api/distributor/orders'],
     enabled: !!dbUser,
     queryFn: async () => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch('/api/distributor/orders', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -61,7 +61,7 @@ export default function DistributorDashboard() {
     queryKey: ['/api/distributor/deliveries'],
     enabled: !!dbUser,
     queryFn: async () => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch('/api/distributor/deliveries', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -73,7 +73,7 @@ export default function DistributorDashboard() {
   // Mutations
   const createProductMutation = useMutation({
     mutationFn: async (data: any) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch('/api/distributor/products', {
         method: 'POST',
         headers: {
@@ -103,7 +103,7 @@ export default function DistributorDashboard() {
 
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch(`/api/distributor/products/${id}`, {
         method: 'PUT',
         headers: {
@@ -133,7 +133,7 @@ export default function DistributorDashboard() {
 
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch(`/api/distributor/products/${id}`, {
         method: 'DELETE',
         headers: {
@@ -161,7 +161,7 @@ export default function DistributorDashboard() {
   // Order and delivery management mutations
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch(`/api/distributor/orders/${id}`, {
         method: 'PATCH',
         headers: {
@@ -191,7 +191,7 @@ export default function DistributorDashboard() {
 
   const createDeliveryMutation = useMutation({
     mutationFn: async (deliveryData: { orderId: string }) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch('/api/distributor/deliveries', {
         method: 'POST',
         headers: {
@@ -221,7 +221,7 @@ export default function DistributorDashboard() {
 
   const updateDeliveryStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const token = localStorage.getItem('firebaseToken') || 'test-token';
       const response = await fetch(`/api/distributor/deliveries/${id}`, {
         method: 'PATCH',
         headers: {

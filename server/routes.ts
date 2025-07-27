@@ -33,7 +33,13 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
     }
 
     const token = authHeader.split('Bearer ')[1];
-    console.log('Token received (first 20 chars):', token.substring(0, 20) + '...');
+    console.log('Token received (first 20 chars):', token?.substring(0, 20) + '...');
+    
+    // Check for null, undefined, or empty token
+    if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
+      console.log('Invalid or missing token');
+      return res.status(401).json({ message: 'Invalid or missing token' });
+    }
     
     // Development fallback - allow test-token for testing
     if (token === 'test-token') {
