@@ -31,7 +31,7 @@ export function AvailableDeliveries() {
 
   const acceptDeliveryMutation = useMutation({
     mutationFn: (assignmentId: string) => 
-      apiRequest(`/api/agent/accept-delivery/${assignmentId}`, 'POST'),
+      apiRequest(`/api/agent/accept-delivery/${assignmentId}`, 'POST', {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/agent/available-deliveries'] });
       queryClient.invalidateQueries({ queryKey: ['/api/agent/my-deliveries'] });

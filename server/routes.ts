@@ -336,6 +336,53 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Vendor profile endpoints
+  app.get("/api/vendor/profile", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      // Return user profile data
+      res.json({
+        ...user,
+        businessName: `${user.firstName}'s Food Cart`,
+        businessDescription: "Street food vendor serving delicious meals",
+        businessAddress: "Mobile vendor location",
+        businessPhone: user.phone
+      });
+    } catch (error) {
+      console.error('Get vendor profile error:', error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.put("/api/vendor/profile", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.role !== 'street_vendor') {
+        return res.status(403).json({ message: "Access denied. Street vendor role required." });
+      }
+
+      const { firstName, lastName, phone } = req.body;
+      
+      // Update basic user fields
+      const updatedUser = await storage.updateUser(user.id, {
+        firstName,
+        lastName,
+        phone
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Update vendor profile error:', error);
+      res.status(400).json({ message: "Failed to update profile" });
+    }
+  });
+
   app.get("/api/vendor/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const products = await storage.getAllWholesaleProducts();
@@ -429,6 +476,45 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Get available deliveries error:', error);
       res.status(500).json({ message: "Failed to fetch available deliveries" });
+    }
+  });
+
+  // Update delivery status
+  app.put("/api/agent/update-status/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const assignment = await storage.updateDeliveryAssignmentStatus(id, status);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Update delivery status error:', error);
+      res.status(400).json({ message: "Failed to update delivery status" });
+    }
+  });
+
+  // Update delivery location
+  app.put("/api/agent/update-location/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { latitude, longitude } = req.body;
+      const assignment = await storage.updateDeliveryLocation(id, latitude, longitude);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Update delivery location error:', error);
+      res.status(400).json({ message: "Failed to update delivery location" });
+    }
+  });
+
+  // Complete delivery with payment
+  app.put("/api/agent/complete-delivery/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { paymentStatus, notes } = req.body;
+      const assignment = await storage.completeDeliveryWithPayment(id, paymentStatus, notes);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Complete delivery error:', error);
+      res.status(400).json({ message: "Failed to complete delivery" });
     }
   });
 

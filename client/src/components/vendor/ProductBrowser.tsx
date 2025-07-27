@@ -37,7 +37,7 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
     enabled: !!distributorId,
     queryFn: async () => {
       const token = localStorage.getItem('firebaseToken');
-      const response = await fetch(`/api/vendor/products?distributorId=${distributorId}`, {
+      const response = await fetch(`/api/vendor/products/${distributorId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -65,9 +65,9 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "price_low":
-          return a.price - b.price;
+          return Number(a.price) - Number(b.price);
         case "price_high":
-          return b.price - a.price;
+          return Number(b.price) - Number(a.price);
         case "stock":
           return b.stockQuantity - a.stockQuantity;
         default:
@@ -95,7 +95,7 @@ export function ProductBrowser({ distributorId }: ProductBrowserProps) {
       price: Number(product.price),
       unit: product.unit,
       shopId: product.distributorId,
-      shopName: product.category,
+      shopName: "Distributor Products", // Generic name since we don't have distributor name here
     });
 
     toast({

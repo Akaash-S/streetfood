@@ -108,8 +108,7 @@ export function VendorCart() {
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
-      const response = await apiRequest('POST', '/api/vendor/orders', orderData);
-      return await response.json();
+      return await apiRequest('/api/vendor/orders', 'POST', orderData);
     },
     onSuccess: () => {
       toast({
