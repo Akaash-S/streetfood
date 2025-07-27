@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Package, TruckIcon, BarChart3, Settings, Users, ShoppingCart, Plus, Edit, Trash2, Eye, Search, Filter, AlertTriangle, TrendingUp, Calendar, MapPin, Clock } from "lucide-react";
+import { Package, TruckIcon, BarChart3, Settings, Users, ShoppingCart, Plus, Edit, Trash2, Eye, Search, Filter, AlertTriangle, TrendingUp, Calendar, MapPin, Clock, Bell, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function DistributorDashboard() {
@@ -21,27 +21,53 @@ export default function DistributorDashboard() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isAddDeliveryOpen, setIsAddDeliveryOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [deliveryStatusFilter, setDeliveryStatusFilter] = useState("all");
 
   // Fetch wholesale products
   const { data: wholesaleProducts = [], isLoading: productsLoading } = useQuery<any[]>({
     queryKey: ['/api/distributor/products'],
     enabled: !!dbUser,
+    queryFn: async () => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const response = await fetch('/api/distributor/products', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch products');
+      return response.json();
+    }
   });
 
   // Fetch bulk orders
   const { data: bulkOrders = [], isLoading: ordersLoading } = useQuery<any[]>({
     queryKey: ['/api/distributor/orders'],
     enabled: !!dbUser,
+    queryFn: async () => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const response = await fetch('/api/distributor/orders', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch orders');
+      return response.json();
+    }
   });
 
   // Fetch deliveries
   const { data: deliveries = [], isLoading: deliveriesLoading } = useQuery<any[]>({
     queryKey: ['/api/distributor/deliveries'],
     enabled: !!dbUser,
+    queryFn: async () => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const response = await fetch('/api/distributor/deliveries', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch deliveries');
+      return response.json();
+    }
   });
 
   // Mutations
@@ -211,6 +237,23 @@ export default function DistributorDashboard() {
     }
   };
 
+  const handleDeliverySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    const selectedOrder = bulkOrders.find(order => order.id === formData.get('orderId'));
+    
+    const data = {
+      orderId: formData.get('orderId') as string,
+      shopId: selectedOrder?.shopId || '',
+      vehicleNumber: formData.get('vehicleNumber') as string,
+      scheduledDate: new Date(formData.get('scheduledDate') as string),
+      status: 'scheduled'
+    };
+
+    createDeliveryMutation.mutate(data);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending": return "bg-yellow-500";
@@ -232,6 +275,41 @@ export default function DistributorDashboard() {
 
   const filteredOrders = bulkOrders.filter((order: any) => {
     return statusFilter === "all" || order.status === statusFilter;
+  });
+
+  const filteredDeliveries = deliveries.filter((delivery: any) => {
+    return deliveryStatusFilter === "all" || delivery.status === deliveryStatusFilter;
+  });
+
+  // Create delivery mutation
+  const createDeliveryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const response = await fetch('/api/distributor/deliveries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create delivery');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/distributor/deliveries'] });
+      setIsAddDeliveryOpen(false);
+      toast({ title: "Delivery scheduled successfully!" });
+    },
+    onError: (error: any) => {
+      console.error('Create delivery error:', error);
+      toast({ title: error.message || "Failed to schedule delivery", variant: "destructive" });
+    }
   });
 
   const stats = [
@@ -746,9 +824,72 @@ export default function DistributorDashboard() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shop Deliveries</h2>
                 <p className="text-gray-600 dark:text-gray-400">Coordinate delivery schedules and logistics</p>
               </div>
+              <div className="flex gap-3">
+                <Select value={deliveryStatusFilter} onValueChange={setDeliveryStatusFilter}>
+                  <SelectTrigger className="w-48">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Deliveries</SelectItem>
+                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                    <SelectItem value="in_transit">In Transit</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Dialog open={isAddDeliveryOpen} onOpenChange={setIsAddDeliveryOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Schedule Delivery
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Schedule New Delivery</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleDeliverySubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="orderId">Select Order</Label>
+                        <Select name="orderId" required>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose order to deliver" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {bulkOrders.filter((order: any) => order.status === 'processing' || order.status === 'shipped').map((order: any) => (
+                              <SelectItem key={order.id} value={order.id}>
+                                {order.orderNumber} - ${order.totalAmount}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="vehicleNumber">Vehicle Number</Label>
+                        <Input id="vehicleNumber" name="vehicleNumber" placeholder="e.g., TRK-001" required />
+                      </div>
+                      <div>
+                        <Label htmlFor="scheduledDate">Scheduled Date</Label>
+                        <Input 
+                          id="scheduledDate" 
+                          name="scheduledDate" 
+                          type="datetime-local" 
+                          min={new Date().toISOString().slice(0, 16)}
+                          required 
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={createDeliveryMutation.isPending}>
+                        {createDeliveryMutation.isPending ? "Scheduling..." : "Schedule Delivery"}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
             <div className="space-y-4">
-              {deliveries.map((delivery: any, index: number) => (
+              {filteredDeliveries.map((delivery: any, index: number) => (
                 <motion.div
                   key={delivery.id}
                   initial={{ opacity: 0, y: 20 }}
