@@ -130,9 +130,21 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Access denied. Distributor role required." });
       }
 
-      const productData = { ...req.body, distributorId: user.id };
-      const validatedData = insertWholesaleProductSchema.parse(productData);
-      const product = await storage.createWholesaleProduct(validatedData);
+      // Manual data transformation to ensure proper types
+      const productData = {
+        distributorId: user.id,
+        name: req.body.name,
+        description: req.body.description || null,
+        category: req.body.category,
+        price: String(req.body.price), // Convert to string for decimal field
+        stockQuantity: parseInt(req.body.stockQuantity) || 0,
+        unit: req.body.unit,
+        minimumOrderQuantity: parseInt(req.body.minimumOrderQuantity) || 1,
+        isActive: req.body.isActive !== undefined ? req.body.isActive : true
+      };
+      
+      console.log("Creating product with processed data:", productData);
+      const product = await storage.createWholesaleProduct(productData);
       res.status(201).json(product);
     } catch (error) {
       console.error('Create product error:', error);
@@ -235,6 +247,44 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Accept delivery error:', error);
       res.status(400).json({ message: "Failed to accept delivery" });
+    }
+  });
+
+  // Legacy vendor routes for backwards compatibility (will be removed)
+  app.get("/api/orders/vendor", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const orders = await storage.getVendorOrdersByVendorId(req.user!.uid);
+      res.json(orders);
+    } catch (error) {
+      console.error('Get legacy vendor orders error:', error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.get("/api/shops", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      // Return distributors as "shops" for legacy compatibility
+      const products = await storage.getAllWholesaleProducts();
+      const distributorIds = Array.from(new Set(products.map(p => p.distributorId)));
+      const distributors = [];
+      
+      for (const distributorId of distributorIds) {
+        // This is a simplified approach - in a real app you'd have a proper query
+        const products_for_distributor = products.filter(p => p.distributorId === distributorId);
+        if (products_for_distributor.length > 0) {
+          distributors.push({
+            id: distributorId,
+            shopName: "Wholesale Distributor",
+            address: "Distributor Address",
+            isActive: true
+          });
+        }
+      }
+      
+      res.json(distributors);
+    } catch (error) {
+      console.error('Get legacy shops error:', error);
+      res.status(500).json({ message: "Failed to fetch shops" });
     }
   });
 
