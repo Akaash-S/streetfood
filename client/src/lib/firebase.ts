@@ -3,11 +3,13 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, si
 
 // Use valid Firebase config or provide development fallback
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project"}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project"}.firebasestorage.app`,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "demo-app-id",
+  apiKey: "AIzaSyBo9digc9kjAowcTLyag75EkFjFC7ppnA4",
+  authDomain: "campus-foodorder.firebaseapp.com",
+  projectId: "campus-foodorder",
+  storageBucket: "campus-foodorder.firebasestorage.app",
+  messagingSenderId: "169647404106",
+  appId: "1:169647404106:web:6fb24dbd91553d53f862b3",
+  measurementId: "G-2F1CVB3BN1"
 };
 
 const app = initializeApp(firebaseConfig);

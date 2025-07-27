@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertWholesaleProductSchema } from "@shared/schema";
 import admin from "firebase-admin";
+import 'dotenv/config';
+
 
 // Extend Express Request type to include user
 interface AuthenticatedRequest extends Request {
