@@ -63,10 +63,20 @@ export const deliveryAssignments = pgTable("delivery_assignments", {
   agentId: varchar("agent_id").references(() => users.id),
   pickupAddress: text("pickup_address").notNull(),
   deliveryAddress: text("delivery_address").notNull(),
-  status: text("status").notNull().default("available"), // 'available', 'assigned', 'picked_up', 'in_transit', 'delivered'
+  status: text("status").notNull().default("available"), // 'available', 'assigned', 'picked_up', 'in_transit', 'delivered', 'completed'
+  paymentMethod: text("payment_method").notNull().default("cash_on_delivery"), // 'cash_on_delivery', 'digital_payment'
+  paymentStatus: text("payment_status").notNull().default("pending"), // 'pending', 'paid', 'failed'
   deliveryFee: decimal("delivery_fee", { precision: 10, scale: 2 }).notNull(),
   estimatedDistance: decimal("estimated_distance", { precision: 5, scale: 2 }), // in kilometers
   estimatedTime: integer("estimated_time"), // in minutes
+  currentLatitude: decimal("current_latitude", { precision: 10, scale: 8 }),
+  currentLongitude: decimal("current_longitude", { precision: 11, scale: 8 }),
+  pickupLatitude: decimal("pickup_latitude", { precision: 10, scale: 8 }),
+  pickupLongitude: decimal("pickup_longitude", { precision: 11, scale: 8 }),
+  deliveryLatitude: decimal("delivery_latitude", { precision: 10, scale: 8 }),
+  deliveryLongitude: decimal("delivery_longitude", { precision: 11, scale: 8 }),
+  actualDeliveryTime: timestamp("actual_delivery_time"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

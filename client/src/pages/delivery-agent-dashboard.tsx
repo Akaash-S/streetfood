@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bike, Truck, DollarSign, CheckCircle, Star, Bell } from "lucide-react";
+import { Bike, Truck, DollarSign, CheckCircle, Star, Bell, Package, Navigation, MapPin } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AvailableDeliveries } from "@/components/delivery/AvailableDeliveries";
+import { ActiveDeliveries } from "@/components/delivery/ActiveDeliveries";
 
 export default function DeliveryAgentDashboard() {
   const { dbUser, logout } = useAuth();
@@ -159,18 +160,28 @@ export default function DeliveryAgentDashboard() {
             variant={activeTab === "dashboard" ? "default" : "outline"}
             onClick={() => setActiveTab("dashboard")}
           >
+            <Truck className="h-4 w-4 mr-2" />
             Dashboard
           </Button>
           <Button
             variant={activeTab === "deliveries" ? "default" : "outline"}
             onClick={() => setActiveTab("deliveries")}
           >
-            Available Deliveries
+            <Package className="h-4 w-4 mr-2" />
+            Available
+          </Button>
+          <Button
+            variant={activeTab === "active" ? "default" : "outline"}
+            onClick={() => setActiveTab("active")}
+          >
+            <Navigation className="h-4 w-4 mr-2" />
+            Active Deliveries
           </Button>
           <Button
             variant={activeTab === "earnings" ? "default" : "outline"}
             onClick={() => setActiveTab("earnings")}
           >
+            <DollarSign className="h-4 w-4 mr-2" />
             Earnings
           </Button>
         </div>
@@ -196,6 +207,16 @@ export default function DeliveryAgentDashboard() {
           </motion.div>
         )}
 
+        {activeTab === "active" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <ActiveDeliveries />
+          </motion.div>
+        )}
+
         {activeTab === "earnings" && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -203,8 +224,39 @@ export default function DeliveryAgentDashboard() {
             transition={{ duration: 0.6 }}
           >
             <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Earnings Overview</h3>
-              <p className="text-gray-600">Coming soon: Detailed earnings tracking and history</p>
+              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+                <DollarSign className="h-5 w-5" />
+                <span>Earnings Overview</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                  <h4 className="font-semibold text-green-800 dark:text-green-200">Today's Earnings</h4>
+                  <p className="text-2xl font-bold text-green-600">$127.50</p>
+                  <p className="text-sm text-green-600">12 deliveries completed</p>
+                </div>
+                <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200">Weekly Total</h4>
+                  <p className="text-2xl font-bold text-blue-600">$892.30</p>
+                  <p className="text-sm text-blue-600">68 deliveries completed</p>
+                </div>
+                <div className="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
+                  <h4 className="font-semibold text-purple-800 dark:text-purple-200">Average per Delivery</h4>
+                  <p className="text-2xl font-bold text-purple-600">$13.12</p>
+                  <p className="text-sm text-purple-600">Including tips & fees</p>
+                </div>
+              </div>
+              <div className="mt-6">
+                <h4 className="font-semibold mb-3">Cash on Delivery Summary</h4>
+                <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-yellow-800 dark:text-yellow-200">Total Cash Collected Today</span>
+                    <span className="font-bold text-yellow-800 dark:text-yellow-200">$425.00</span>
+                  </div>
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
+                    Remember to deposit cash payments according to company policy
+                  </p>
+                </div>
+              </div>
             </Card>
           </motion.div>
         )}

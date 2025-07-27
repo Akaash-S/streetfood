@@ -415,6 +415,64 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Enhanced delivery agent routes for tracking and payment
+  app.get("/api/agent/available-deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const assignments = await storage.getAvailableDeliveryAssignments();
+      res.json(assignments);
+    } catch (error) {
+      console.error('Get available deliveries error:', error);
+      res.status(500).json({ message: "Failed to fetch available deliveries" });
+    }
+  });
+
+  app.put("/api/agent/update-location/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { latitude, longitude } = req.body;
+      const assignment = await storage.updateDeliveryLocation(req.params.id, latitude, longitude);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Update delivery location error:', error);
+      res.status(400).json({ message: "Failed to update delivery location" });
+    }
+  });
+
+  app.put("/api/agent/update-status/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { status } = req.body;
+      const assignment = await storage.updateDeliveryAssignmentStatus(req.params.id, status);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Update delivery status error:', error);
+      res.status(400).json({ message: "Failed to update delivery status" });
+    }
+  });
+
+  app.post("/api/agent/complete-delivery/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { paymentStatus, notes } = req.body;
+      const assignment = await storage.completeDeliveryWithPayment(req.params.id, paymentStatus, notes);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Complete delivery error:', error);
+      res.status(400).json({ message: "Failed to complete delivery" });
+    }
+  });
+
+  // Public tracking endpoint (no auth required for vendors to track)
+  app.get("/api/tracking/:assignmentId", async (req: Request, res: Response) => {
+    try {
+      const trackingInfo = await storage.getDeliveryTrackingInfo(req.params.assignmentId);
+      if (!trackingInfo) {
+        return res.status(404).json({ message: "Delivery not found" });
+      }
+      res.json(trackingInfo);
+    } catch (error) {
+      console.error('Get tracking info error:', error);
+      res.status(500).json({ message: "Failed to get tracking information" });
+    }
+  });
+
   // Legacy vendor routes for backwards compatibility (will be removed)
   app.get("/api/orders/vendor", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {

@@ -50,6 +50,9 @@ export interface IStorage {
   createDeliveryAssignmentForOrder(orderId: string, distributorFirebaseUid: string): Promise<DeliveryAssignment>;
   acceptDeliveryAssignment(assignmentId: string, agentFirebaseUid: string): Promise<DeliveryAssignment>;
   updateDeliveryAssignmentStatus(assignmentId: string, status: string): Promise<DeliveryAssignment>;
+  updateDeliveryLocation(assignmentId: string, latitude: number, longitude: number): Promise<DeliveryAssignment>;
+  completeDeliveryWithPayment(assignmentId: string, paymentStatus: string, notes?: string): Promise<DeliveryAssignment>;
+  getDeliveryTrackingInfo(assignmentId: string): Promise<DeliveryAssignment | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -209,18 +212,57 @@ export class DatabaseStorage implements IStorage {
     const [order] = await db.select().from(vendorOrders).where(eq(vendorOrders.id, orderId));
     if (!order) throw new Error('Order not found');
     
-    // Create delivery assignment
+    // Create delivery assignment with enhanced features
     const assignmentData = {
       orderId: orderId,
       pickupAddress: distributor.companyName || 'Distributor Warehouse',
       deliveryAddress: order.deliveryAddress,
       status: 'available',
-      estimatedDeliveryDate: order.estimatedDeliveryDate || null,
+      paymentMethod: 'cash_on_delivery',
+      paymentStatus: 'pending',
       deliveryFee: '50.00', // Default delivery fee
+      estimatedDistance: '5.0', // Default 5km
+      estimatedTime: 30, // Default 30 minutes
+      // Default coordinates (can be updated when agent accepts)
+      pickupLatitude: '40.7128',
+      pickupLongitude: '-74.0060',
+      deliveryLatitude: '40.7589',
+      deliveryLongitude: '-73.9851',
     };
     
-    const [newAssignment] = await db.insert(deliveryAssignments).values([assignmentData]).returning();
+    const [newAssignment] = await db.insert(deliveryAssignments).values(assignmentData).returning();
     return newAssignment;
+  }
+
+  async updateDeliveryLocation(assignmentId: string, latitude: number, longitude: number): Promise<DeliveryAssignment> {
+    const [updatedAssignment] = await db.update(deliveryAssignments)
+      .set({ 
+        currentLatitude: String(latitude), 
+        currentLongitude: String(longitude),
+        updatedAt: new Date()
+      })
+      .where(eq(deliveryAssignments.id, assignmentId))
+      .returning();
+    return updatedAssignment;
+  }
+
+  async completeDeliveryWithPayment(assignmentId: string, paymentStatus: string, notes?: string): Promise<DeliveryAssignment> {
+    const [updatedAssignment] = await db.update(deliveryAssignments)
+      .set({ 
+        status: 'completed',
+        paymentStatus: paymentStatus,
+        actualDeliveryTime: new Date(),
+        notes: notes || null,
+        updatedAt: new Date()
+      })
+      .where(eq(deliveryAssignments.id, assignmentId))
+      .returning();
+    return updatedAssignment;
+  }
+
+  async getDeliveryTrackingInfo(assignmentId: string): Promise<DeliveryAssignment | undefined> {
+    const [assignment] = await db.select().from(deliveryAssignments).where(eq(deliveryAssignments.id, assignmentId));
+    return assignment;
   }
 }
 

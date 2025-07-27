@@ -1,136 +1,177 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, DollarSign, Map } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { MapPin, Clock, DollarSign, Package, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export function AvailableDeliveries() {
-  const { data: deliveries, isLoading } = useQuery({
-    queryKey: ['/api/delivery/available'],
-  });
-  
-  const queryClient = useQueryClient();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const acceptDelivery = useMutation({
-    mutationFn: async (requestId: string) => {
-      return apiRequest(`/api/delivery/${requestId}/accept`, {
-        method: 'POST',
-      });
-    },
+  const { data: availableDeliveries = [], isLoading } = useQuery({
+    queryKey: ['/api/agent/available-deliveries'],
+    queryFn: () => fetch('/api/agent/available-deliveries', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('firebaseToken')}`
+      }
+    }).then(res => res.json())
+  });
+
+  const acceptDeliveryMutation = useMutation({
+    mutationFn: (assignmentId: string) => 
+      apiRequest(`/api/agent/accept-delivery/${assignmentId}`, 'POST'),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/delivery/available'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/agent/available-deliveries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/agent/my-deliveries'] });
       toast({
         title: "Delivery Accepted",
-        description: "You have successfully accepted this delivery request",
+        description: "You have successfully accepted this delivery assignment.",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to accept delivery request",
+        description: "Failed to accept delivery assignment.",
         variant: "destructive",
       });
-    },
+    }
   });
 
   if (isLoading) {
     return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (availableDeliveries.length === 0) {
+    return (
       <Card>
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between py-4 border-b">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-48"></div>
-                    <div className="h-3 bg-gray-200 rounded w-32"></div>
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <div className="h-8 bg-gray-200 rounded w-16"></div>
-                  <div className="h-8 bg-gray-200 rounded w-8"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <CardContent className="p-8 text-center">
+          <Truck className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Available Deliveries</h3>
+          <p className="text-gray-500">Check back later for new delivery requests.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-surface border border-gray-200 overflow-hidden">
-      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-secondary">Available Delivery Requests</h3>
-        <Badge variant="secondary" className="text-sm">
-          {deliveries?.length || 0} available
-        </Badge>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Available Deliveries</h2>
+        <Badge variant="secondary">{availableDeliveries.length} Available</Badge>
       </div>
-      <div className="divide-y divide-gray-200">
-        {deliveries?.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">
-            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p>No delivery requests available</p>
-            <p className="text-sm">Check back later for new opportunities!</p>
-          </div>
-        ) : (
-          deliveries?.map((delivery: any) => (
-            <div key={delivery.id} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <MapPin className="text-gray-600" />
-                  </div>
+      
+      <div className="grid gap-4">
+        {availableDeliveries.map((delivery: any, index: number) => (
+          <motion.div
+            key={delivery.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-medium text-secondary">{delivery.route}</p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{delivery.distance}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4" />
-                        <span>Est. {delivery.estimatedTime}</span>
-                      </div>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <Package className="h-5 w-5" />
+                      <span>Order #{delivery.orderId?.slice(-8)}</span>
+                    </CardTitle>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Badge variant="outline">
+                        {delivery.paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 'Digital Payment'}
+                      </Badge>
+                      <Badge className="bg-green-100 text-green-800">
+                        ${delivery.deliveryFee} Fee
+                      </Badge>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Posted {new Date(delivery.createdAt).toLocaleTimeString()}
-                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => acceptDeliveryMutation.mutate(delivery.id)}
+                    disabled={acceptDeliveryMutation.isPending}
+                    className="ml-4"
+                  >
+                    {acceptDeliveryMutation.isPending ? "Accepting..." : "Accept"}
+                  </Button>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Route Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <MapPin className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-600">Pickup</span>
+                      </div>
+                      <p className="text-sm">{delivery.pickupAddress}</p>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <MapPin className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-gray-600">Delivery</span>
+                      </div>
+                      <p className="text-sm">{delivery.deliveryAddress}</p>
+                    </div>
+                  </div>
+
+                  {/* Delivery Details */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center bg-blue-50 dark:bg-blue-900 p-3 rounded-lg">
+                      <div className="flex items-center justify-center space-x-1 mb-1">
+                        <MapPin className="h-4 w-4 text-blue-600" />
+                        <span className="text-xs text-blue-600">Distance</span>
+                      </div>
+                      <p className="font-semibold">{delivery.estimatedDistance} km</p>
+                    </div>
+                    <div className="text-center bg-orange-50 dark:bg-orange-900 p-3 rounded-lg">
+                      <div className="flex items-center justify-center space-x-1 mb-1">
+                        <Clock className="h-4 w-4 text-orange-600" />
+                        <span className="text-xs text-orange-600">Est. Time</span>
+                      </div>
+                      <p className="font-semibold">{delivery.estimatedTime} mins</p>
+                    </div>
+                    <div className="text-center bg-green-50 dark:bg-green-900 p-3 rounded-lg">
+                      <div className="flex items-center justify-center space-x-1 mb-1">
+                        <DollarSign className="h-4 w-4 text-green-600" />
+                        <span className="text-xs text-green-600">Earnings</span>
+                      </div>
+                      <p className="font-semibold">${delivery.deliveryFee}</p>
+                    </div>
+                  </div>
+
+                  {/* Payment Method Info */}
+                  {delivery.paymentMethod === 'cash_on_delivery' && (
+                    <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="h-4 w-4 text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                          Cash on Delivery
+                        </span>
+                      </div>
+                      <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                        Collect cash payment from customer upon delivery
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="text-xs text-gray-500 text-center">
+                    Posted {new Date(delivery.createdAt).toLocaleTimeString()}
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="text-right">
-                    <div className="flex items-center space-x-1">
-                      <DollarSign className="w-4 h-4 text-green-600" />
-                      <p className="font-semibold text-secondary">${delivery.fee?.toFixed(2)}</p>
-                    </div>
-                    <p className="text-xs text-gray-500">Delivery fee</p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      onClick={() => acceptDelivery.mutate(delivery.id)}
-                      disabled={acceptDelivery.isPending}
-                      className="bg-primary hover:bg-primary-dark text-white"
-                    >
-                      Accept
-                    </Button>
-                    <Button variant="outline" size="icon" className="p-2">
-                      <Map className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
-    </Card>
+    </div>
   );
 }
