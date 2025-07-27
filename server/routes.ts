@@ -268,6 +268,29 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Street vendor routes
+  // Get all distributors (shops) for vendor to browse
+  app.get("/api/vendor/distributors", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const distributors = await storage.getAllDistributors();
+      res.json(distributors);
+    } catch (error) {
+      console.error('Get distributors error:', error);
+      res.status(500).json({ message: "Failed to fetch distributors" });
+    }
+  });
+
+  // Get products by distributor ID for vendor to browse
+  app.get("/api/vendor/products/:distributorId", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { distributorId } = req.params;
+      const products = await storage.getProductsByDistributorId(distributorId);
+      res.json(products);
+    } catch (error) {
+      console.error('Get vendor products error:', error);
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
   app.get("/api/vendor/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const products = await storage.getAllWholesaleProducts();
@@ -285,6 +308,40 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Get vendor orders error:', error);
       res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Create vendor order
+  app.post("/api/vendor/orders", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.role !== 'street_vendor') {
+        return res.status(403).json({ message: "Access denied. Street vendor role required." });
+      }
+
+      const { distributorId, totalAmount, deliveryAddress, items, notes } = req.body;
+      
+      // Generate unique order number
+      const orderNumber = `VO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      const orderData = {
+        vendorId: user.id,
+        distributorId,
+        orderNumber,
+        totalAmount: String(totalAmount), // Convert to string for decimal field
+        deliveryAddress,
+        notes: notes || null,
+        status: 'pending'
+      };
+      
+      const order = await storage.createVendorOrder(orderData);
+      res.status(201).json(order);
+    } catch (error) {
+      console.error('Create vendor order error:', error);
+      res.status(400).json({ message: "Failed to create order" });
     }
   });
 

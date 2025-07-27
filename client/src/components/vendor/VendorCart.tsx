@@ -108,28 +108,16 @@ export function VendorCart() {
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await (window as any).firebase?.auth()?.currentUser?.getIdToken?.() || 'test-token'}`,
-        },
-        body: JSON.stringify(orderData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create order');
-      }
-      
-      return response.json();
+      const response = await apiRequest('POST', '/api/vendor/orders', orderData);
+      return await response.json();
     },
     onSuccess: () => {
       toast({
         title: "Order Placed Successfully!",
-        description: "Your order has been sent to the shop for confirmation.",
+        description: "Your order has been sent to the distributor for confirmation.",
       });
       clearCart();
-      queryClient.invalidateQueries({ queryKey: ['/api/orders/vendor'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/vendor/orders'] });
     },
     onError: () => {
       toast({
@@ -150,12 +138,12 @@ export function VendorCart() {
       return;
     }
 
-    // Group items by shop
-    const ordersByShop = items.reduce((acc, item) => {
+    // Group items by distributor
+    const ordersByDistributor = items.reduce((acc, item) => {
       if (!acc[item.shopId]) {
         acc[item.shopId] = {
-          shopId: item.shopId,
-          shopName: item.shopName,
+          distributorId: item.shopId,
+          distributorName: item.shopName,
           items: [],
           totalAmount: 0,
         };
@@ -170,13 +158,14 @@ export function VendorCart() {
       return acc;
     }, {} as any);
 
-    // Create separate orders for each shop
-    Object.values(ordersByShop).forEach((order: any) => {
+    // Create separate orders for each distributor
+    Object.values(ordersByDistributor).forEach((order: any) => {
       createOrderMutation.mutate({
-        shopId: order.shopId,
+        distributorId: order.distributorId,
         totalAmount: order.totalAmount,
+        deliveryAddress: "Default delivery address", // TODO: Get from user profile
         items: order.items,
-        notes: `Order from ${order.shopName}`,
+        notes: `Order from ${order.distributorName}`,
       });
     });
   };

@@ -30,6 +30,8 @@ export interface IStorage {
   updateWholesaleProduct(id: string, updates: Partial<WholesaleProduct>): Promise<WholesaleProduct>;
   deleteWholesaleProduct(id: string): Promise<boolean>;
   getAllWholesaleProducts(): Promise<WholesaleProduct[]>;
+  getAllDistributors(): Promise<User[]>;
+  getProductsByDistributorId(distributorId: string): Promise<WholesaleProduct[]>;
   
   // Street vendor methods (orders)
   getVendorOrdersByVendorId(firebaseUid: string): Promise<VendorOrder[]>;
@@ -98,6 +100,14 @@ export class DatabaseStorage implements IStorage {
 
   async getAllWholesaleProducts(): Promise<WholesaleProduct[]> {
     return await db.select().from(wholesaleProducts);
+  }
+
+  async getAllDistributors(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.role, 'distributor'));
+  }
+
+  async getProductsByDistributorId(distributorId: string): Promise<WholesaleProduct[]> {
+    return await db.select().from(wholesaleProducts).where(eq(wholesaleProducts.distributorId, distributorId));
   }
 
   // Street vendor order methods

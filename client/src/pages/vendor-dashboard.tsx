@@ -15,31 +15,31 @@ import { OrderHistory } from "@/components/vendor/OrderHistory";
 export default function VendorDashboard() {
   const { dbUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [selectedShopId, setSelectedShopId] = useState<string | null>(null);
+  const [selectedDistributorId, setSelectedDistributorId] = useState<string | null>(null);
 
-  // Handle URL parameters for shop selection
+  // Handle URL parameters for distributor selection
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
-    const shopId = params.get('shopId');
+    const distributorId = params.get('distributorId');
     
     if (tab) {
       setActiveTab(tab);
     }
-    if (shopId) {
-      setSelectedShopId(shopId);
+    if (distributorId) {
+      setSelectedDistributorId(distributorId);
     }
 
     const handlePopState = () => {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get('tab');
-      const shopId = params.get('shopId');
+      const distributorId = params.get('distributorId');
       
       if (tab) {
         setActiveTab(tab);
       }
-      if (shopId) {
-        setSelectedShopId(shopId);
+      if (distributorId) {
+        setSelectedDistributorId(distributorId);
       }
     };
 
@@ -134,14 +134,14 @@ export default function VendorDashboard() {
             Welcome back, {dbUser?.firstName || "Vendor"}!
           </h2>
           <p className="text-blue-100 mb-4">
-            Ready to place some orders today? Browse our partner shops and restock your inventory.
+            Ready to place some orders today? Browse our partner distributors and restock your inventory.
           </p>
           <Button 
             variant="secondary" 
             className="bg-white text-blue-600 hover:bg-blue-50"
             onClick={() => setActiveTab("shops")}
           >
-            Browse Shops
+            Browse Distributors
           </Button>
         </motion.div>
 
@@ -181,7 +181,7 @@ export default function VendorDashboard() {
             variant={activeTab === "shops" ? "default" : "outline"}
             onClick={() => setActiveTab("shops")}
           >
-            Browse Shops
+            Browse Distributors
           </Button>
           <Button
             variant={activeTab === "products" ? "default" : "outline"}
@@ -232,7 +232,7 @@ export default function VendorDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <ProductBrowser shopId={selectedShopId} />
+                <ProductBrowser distributorId={selectedDistributorId || undefined} />
               </motion.div>
             )}
 

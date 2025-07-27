@@ -16,16 +16,16 @@ interface Product {
   price: number;
   stockQuantity: number;
   unit: string;
-  shopId: string;
-  shopName: string;
+  distributorId: string;
+  category: string;
   isActive: boolean;
 }
 
 interface ProductBrowserProps {
-  shopId?: string;
+  distributorId?: string;
 }
 
-export function ProductBrowser({ shopId }: ProductBrowserProps) {
+export function ProductBrowser({ distributorId }: ProductBrowserProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [filterBy, setFilterBy] = useState("all");
@@ -33,8 +33,8 @@ export function ProductBrowser({ shopId }: ProductBrowserProps) {
   const { toast } = useToast();
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['/api/products', shopId],
-    enabled: !!shopId,
+    queryKey: ['/api/vendor/products', distributorId],
+    enabled: !!distributorId,
   });
 
   const filteredProducts = React.useMemo(() => {
@@ -84,8 +84,8 @@ export function ProductBrowser({ shopId }: ProductBrowserProps) {
       name: product.name,
       price: product.price,
       unit: product.unit,
-      shopId: product.shopId,
-      shopName: product.shopName,
+      shopId: product.distributorId,
+      shopName: product.category,
     });
 
     toast({
