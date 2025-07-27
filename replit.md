@@ -2,9 +2,15 @@
 
 ## Overview
 
-This is a comprehensive Street Food Ecosystem Platform that connects street food vendors, retail shop owners, delivery agents, and distributors in a streamlined supply chain. The application provides role-based dashboards for each user type and facilitates order management, product browsing, and delivery coordination.
+This is a simplified Street Food Ecosystem Platform that connects street food vendors, delivery agents, and distributors in a direct supply chain. The application provides role-based dashboards for each of the three user types and facilitates wholesale ordering, product management, and delivery coordination without intermediary retail shops.
 
 ## Recent Changes
+- **2025-07-27**: ✅ **CLEAN ARCHITECTURE**: Removed all mock/demo data and simplified to three-role system
+  - Removed retail shop owner role and all related functionality
+  - Updated system to support only: street_vendor, delivery_agent, distributor
+  - Cleaned database of all demo/mock data
+  - Updated frontend registration and authentication for three roles only
+  - Changed distributor field from shopName to companyName for better clarity
 - **2025-07-27**: ✅ **MAJOR MIGRATION**: Completely removed Supabase and implemented Neon PostgreSQL
   - Replaced file-based storage (PersistentStorage) with DatabaseStorage using Neon PostgreSQL
   - Migrated all data operations to use Drizzle ORM with proper database relationships
@@ -53,18 +59,16 @@ The application follows a modern full-stack architecture with clear separation b
 ### Authentication System
 - Firebase Authentication handles user registration and login
 - Custom middleware verifies Firebase tokens on protected routes
-- Role-based access control with three user types: vendor, shop_owner, delivery_agent
+- Role-based access control with three user types: street_vendor, delivery_agent, distributor
 - Session management integrated with React context
 
 ### Database Schema
-The system uses a relational database with the following core entities:
-- **Users**: Stores user profiles with Firebase UID integration and role assignment
-- **Retail Shops**: Shop information linked to shop owners
-- **Products**: Product catalog with inventory management
-- **Orders**: Order management with status tracking
-- **Order Items**: Detailed order line items
-- **Ratings**: User feedback system
-- **Delivery Requests**: Delivery coordination between agents and orders
+The system uses a simplified relational database with the following core entities:
+- **Users**: Stores user profiles with Firebase UID integration and three-role assignment (street_vendor, delivery_agent, distributor)
+- **Wholesale Products**: Product catalog managed by distributors for bulk sales
+- **Vendor Orders**: Orders placed by street vendors to distributors for wholesale products
+- **Vendor Order Items**: Detailed line items for vendor orders
+- **Delivery Assignments**: Delivery coordination between delivery agents and vendor orders
 
 ### UI Component System
 - Built on Radix UI primitives for accessibility
@@ -73,10 +77,9 @@ The system uses a relational database with the following core entities:
 - Dark mode support through CSS variables
 
 ### Role-Based Dashboards
-- **Vendor Dashboard**: Product browsing, order placement, order tracking
-- **Shop Owner Dashboard**: Order management, inventory updates, customer communication
-- **Delivery Agent Dashboard**: Available deliveries, route management, earnings tracking
-- **Distributor Dashboard**: Complete wholesale management system with product CRUD, bulk order processing, delivery scheduling, inventory tracking, and real-time status updates
+- **Street Vendor Dashboard**: Browse wholesale products, place orders directly from distributors, track deliveries
+- **Delivery Agent Dashboard**: View available delivery assignments, accept deliveries, manage delivery status and earnings
+- **Distributor Dashboard**: Complete wholesale management system with product CRUD, vendor order processing, delivery scheduling, inventory tracking, and real-time status updates
 
 ## Data Flow
 

@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import VendorDashboard from "@/pages/vendor-dashboard";
-import ShopOwnerDashboard from "@/pages/shop-owner-dashboard";
+
 import DeliveryAgentDashboard from "@/pages/delivery-agent-dashboard";
 import DistributorDashboard from "@/pages/distributor-dashboard";
 
@@ -42,11 +42,8 @@ function AppRouter() {
   React.useEffect(() => {
     if (!loading && user && dbUser && location === "/") {
       switch (dbUser.role) {
-        case "vendor":
+        case "street_vendor":
           setLocation("/vendor-dashboard");
-          break;
-        case "shop_owner":
-          setLocation("/shop-owner-dashboard");
           break;
         case "delivery_agent":
           setLocation("/delivery-agent-dashboard");
@@ -73,11 +70,7 @@ function AppRouter() {
       </Route>
       
       <Route path="/vendor-dashboard">
-        <ProtectedRoute component={VendorDashboard} allowedRoles={["vendor"]} />
-      </Route>
-      
-      <Route path="/shop-owner-dashboard">
-        <ProtectedRoute component={ShopOwnerDashboard} allowedRoles={["shop_owner"]} />
+        <ProtectedRoute component={VendorDashboard} allowedRoles={["street_vendor"]} />
       </Route>
       
       <Route path="/delivery-agent-dashboard">

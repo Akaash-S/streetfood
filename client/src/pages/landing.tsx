@@ -14,26 +14,15 @@ export default function Landing() {
     {
       icon: Store,
       title: "Street Food Vendors",
-      description: "Browse products, place orders, and track deliveries from multiple retail shops in real-time.",
+      description: "Browse wholesale products, place orders directly from distributors, and track deliveries in real-time.",
       features: [
-        "Product browsing & filtering",
+        "Wholesale product browsing",
+        "Direct distributor ordering",
         "Real-time order tracking",
-        "Rating & review system"
+        "Delivery management"
       ],
       bgColor: "bg-blue-100",
       iconColor: "text-blue-600"
-    },
-    {
-      icon: ShoppingBag,
-      title: "Retail Shop Owners",
-      description: "Manage orders, update inventory, and connect with vendors to grow your business reach.",
-      features: [
-        "Order management dashboard",
-        "Inventory tracking",
-        "Vendor relationship tools"
-      ],
-      bgColor: "bg-green-100",
-      iconColor: "text-green-600"
     },
     {
       icon: Bike,
@@ -41,16 +30,17 @@ export default function Landing() {
       description: "Accept delivery requests, navigate efficiently, and manage your delivery schedule seamlessly.",
       features: [
         "Available delivery requests",
-        "GPS navigation assistance",
-        "Earnings tracking"
+        "Route optimization",
+        "Earnings tracking",
+        "Performance analytics"
       ],
       bgColor: "bg-purple-100",
       iconColor: "text-purple-600"
     },
     {
-      icon: Store,
+      icon: ShoppingBag,
       title: "Distributors",
-      description: "Wholesale suppliers from Premium Food Distributors Inc. providing bulk ingredients to retail shops.",
+      description: "Wholesale suppliers providing bulk ingredients and products directly to street food vendors.",
       features: [
         "Wholesale product management",
         "Bulk order processing",

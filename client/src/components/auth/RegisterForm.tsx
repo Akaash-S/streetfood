@@ -22,7 +22,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
     email: "",
     phone: "",
     role: "",
-    shopName: "",
+    companyName: "",
     password: "",
     confirmPassword: "",
   });
@@ -65,7 +65,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
           lastName: formData.lastName,
           phone: formData.phone,
           role: formData.role,
-          shopName: formData.role === 'distributor' ? formData.shopName : null,
+          companyName: formData.role === 'distributor' ? formData.companyName : null,
         }),
       });
 
@@ -178,8 +178,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="vendor">Street Food Vendor</SelectItem>
-                    <SelectItem value="shop_owner">Retail Shop Owner</SelectItem>
+                    <SelectItem value="street_vendor">Street Food Vendor</SelectItem>
                     <SelectItem value="delivery_agent">Delivery Agent</SelectItem>
                     <SelectItem value="distributor">Distributor</SelectItem>
                   </SelectContent>
@@ -188,12 +187,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSwitchToL
 
               {formData.role === 'distributor' && (
                 <div className="space-y-2">
-                  <Label htmlFor="shopName">Company Name</Label>
+                  <Label htmlFor="companyName">Company Name</Label>
                   <Input
-                    id="shopName"
+                    id="companyName"
                     placeholder="e.g., Premium Food Distributors Inc."
-                    value={formData.shopName}
-                    onChange={(e) => handleInputChange("shopName", e.target.value)}
+                    value={formData.companyName}
+                    onChange={(e) => handleInputChange("companyName", e.target.value)}
                     required
                   />
                 </div>

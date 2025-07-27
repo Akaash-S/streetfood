@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema } from "@shared/schema";
+import { insertUserSchema, insertWholesaleProductSchema } from "@shared/schema";
 import admin from "firebase-admin";
 
 // Extend Express Request type to include user
@@ -35,7 +35,7 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
     if (token === 'test-token') {
       req.user = { 
         uid: '86FrXYYSpcYgRa8KyV9NSs74HMv1',
-        email: 'dbs@example.com' 
+        email: 'distributor@premiumfood.com' 
       } as any;
       return next();
     }
@@ -60,254 +60,61 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
           } as any;
           return next();
         } catch (decodeError) {
-          // If decoding fails, use the logged-in distributor user
-          req.user = { 
-            uid: '86FrXYYSpcYgRa8KyV9NSs74HMv1',
-            email: 'dbs@example.com' 
-          } as any;
-          return next();
+          return res.status(401).json({ message: 'Invalid token' });
         }
       }
     } catch (error) {
       console.error('Token verification failed:', error);
-      // Fallback to distributor user for development
-      req.user = { 
-        uid: '86FrXYYSpcYgRa8KyV9NSs74HMv1',
-        email: 'dbs@example.com' 
-      } as any;
-      return next();
+      return res.status(401).json({ message: 'Token verification failed' });
     }
   } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(401).json({ message: 'Invalid token' });
+    console.error('Auth middleware error:', error);
+    return res.status(500).json({ message: 'Authentication error' });
   }
 };
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  // Authentication routes
-  app.post("/api/auth/register", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+export function registerRoutes(app: Express): Server {
+  // Auth routes
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      const validatedData = insertUserSchema.parse(req.body);
       
-      // Check if user already exists
-      const existingUser = await storage.getUserByFirebaseUid(req.user!.uid);
+      const existingUser = await storage.getUserByFirebaseUid(validatedData.firebaseUid);
       if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
+        return res.json(existingUser);
       }
 
-      // Create user in database
-      const user = await storage.createUser({
-        ...userData,
-        firebaseUid: req.user!.uid,
-      });
-
-      res.status(201).json({ user });
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      res.status(400).json({ message: error.message || "Registration failed" });
+      const user = await storage.createUser(validatedData);
+      res.status(201).json(user);
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(400).json({ message: "Registration failed" });
     }
   });
 
-  app.post("/api/auth/login", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = await storage.getUserByFirebaseUid(req.user!.uid);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json({ user });
-    } catch (error: any) {
-      console.error("Login error:", error);
-      res.status(500).json({ message: "Login failed" });
-    }
-  });
-
-  // Protected user routes
+  // Get current user info
   app.get("/api/users/me", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log("Getting user for UID:", req.user!.uid);
       const user = await storage.getUserByFirebaseUid(req.user!.uid);
       if (!user) {
-        console.log("User not found in storage");
         return res.status(404).json({ message: "User not found" });
       }
       console.log("User found:", user);
       res.json(user);
-    } catch (error: any) {
-      console.error("Get user error:", error);
+    } catch (error) {
+      console.error('Get user error:', error);
       res.status(500).json({ message: "Failed to get user data" });
     }
   });
 
-  // Shop routes
-  app.get("/api/shops", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const shops = await storage.getAllShops();
-      res.json(shops);
-    } catch (error: any) {
-      console.error("Get shops error:", error);
-      res.status(500).json({ message: "Failed to get shops" });
-    }
-  });
-
-  // Product routes
-  app.get("/api/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { shopId } = req.query;
-      if (shopId) {
-        const products = await storage.getProductsByShopId(shopId as string);
-        res.json(products);
-      } else {
-        const products = await storage.getAllProducts();
-        res.json(products);
-      }
-    } catch (error: any) {
-      console.error("Get products error:", error);
-      res.status(500).json({ message: "Failed to get products" });
-    }
-  });
-
-  // Order routes
-  app.post("/api/orders", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = await storage.getUserByFirebaseUid(req.user!.uid);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const orderData = {
-        ...req.body,
-        vendorId: user.id,
-      };
-
-      const order = await storage.createOrder(orderData);
-      res.status(201).json(order);
-    } catch (error: any) {
-      console.error("Create order error:", error);
-      res.status(500).json({ message: "Failed to create order" });
-    }
-  });
-
-  app.get("/api/orders/vendor", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = await storage.getUserByFirebaseUid(req.user!.uid);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const orders = await storage.getOrdersByVendorId(user.id);
-      res.json(orders);
-    } catch (error: any) {
-      console.error("Get vendor orders error:", error);
-      res.status(500).json({ message: "Failed to get orders" });
-    }
-  });
-
-  // Vendor profile routes
-  app.get("/api/vendor/profile", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = await storage.getUserByFirebaseUid(req.user!.uid);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Return vendor profile (for now, just the user data with some mock business info)
-      const profile = {
-        ...user,
-        businessName: `${user.firstName}'s Food Cart`,
-        businessDescription: "Authentic street food with fresh ingredients",
-        businessAddress: "Mobile vendor - Downtown area",
-        businessPhone: user.phone
-      };
-      
-      res.json(profile);
-    } catch (error: any) {
-      console.error("Get vendor profile error:", error);
-      res.status(500).json({ message: "Failed to get profile" });
-    }
-  });
-
-  app.put("/api/vendor/profile", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = await storage.getUserByFirebaseUid(req.user!.uid);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // For now, just return success (in a real app, you'd update the profile)
-      res.json({ message: "Profile updated successfully" });
-    } catch (error: any) {
-      console.error("Update vendor profile error:", error);
-      res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
-
-  app.get("/api/orders/shop", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = await storage.getUserByFirebaseUid(req.user!.uid);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      const shops = await storage.getShopsByOwnerId(user.id);
-      let allOrders: any[] = [];
-      
-      for (const shop of shops) {
-        const orders = await storage.getOrdersByShopId(shop.id);
-        allOrders = [...allOrders, ...orders];
-      }
-      
-      res.json(allOrders);
-    } catch (error: any) {
-      console.error("Get shop orders error:", error);
-      res.status(500).json({ message: "Failed to get orders" });
-    }
-  });
-
-  app.patch("/api/orders/:orderId/status", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { status } = req.body;
-      const order = await storage.updateOrderStatus(req.params.orderId, status);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-      res.json(order);
-    } catch (error: any) {
-      console.error("Update order status error:", error);
-      res.status(500).json({ message: "Failed to update order status" });
-    }
-  });
-
-  // Delivery routes
-  app.get("/api/delivery/available", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const requests = await storage.getAvailableDeliveryRequests();
-      res.json(requests);
-    } catch (error: any) {
-      console.error("Get delivery requests error:", error);
-      res.status(500).json({ message: "Failed to get delivery requests" });
-    }
-  });
-
-  app.post("/api/delivery/:requestId/accept", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const request = await storage.acceptDeliveryRequest(req.params.requestId, req.user!.uid);
-      if (!request) {
-        return res.status(404).json({ message: "Delivery request not found" });
-      }
-      res.json(request);
-    } catch (error: any) {
-      console.error("Accept delivery request error:", error);
-      res.status(500).json({ message: "Failed to accept delivery request" });
-    }
-  });
-
-  // Distributor routes
+  // Distributor routes - Wholesale product management
   app.get("/api/distributor/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const products = await storage.getWholesaleProductsByDistributorId(req.user!.uid);
       res.json(products);
     } catch (error) {
-      console.error("Error fetching wholesale products:", error);
+      console.error('Get distributor products error:', error);
       res.status(500).json({ message: "Failed to fetch products" });
     }
   });
@@ -324,111 +131,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const productData = { ...req.body, distributorId: user.id };
-      const product = await storage.createWholesaleProduct(productData);
+      const validatedData = insertWholesaleProductSchema.parse(productData);
+      const product = await storage.createWholesaleProduct(validatedData);
       res.status(201).json(product);
     } catch (error) {
-      console.error("Error creating wholesale product:", error);
-      res.status(500).json({ message: "Failed to create product" });
+      console.error('Create product error:', error);
+      res.status(400).json({ message: "Failed to create product" });
     }
   });
 
   app.put("/api/distributor/products/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const { id } = req.params;
-      const updatedProduct = await storage.updateWholesaleProduct(id, req.body);
-      if (!updatedProduct) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      res.json(updatedProduct);
+      const product = await storage.updateWholesaleProduct(req.params.id, req.body);
+      res.json(product);
     } catch (error) {
-      console.error("Error updating wholesale product:", error);
-      res.status(500).json({ message: "Failed to update product" });
+      console.error('Update product error:', error);
+      res.status(400).json({ message: "Failed to update product" });
     }
   });
 
   app.delete("/api/distributor/products/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const { id } = req.params;
-      const deleted = await storage.deleteWholesaleProduct(id);
-      if (!deleted) {
-        return res.status(404).json({ message: "Product not found" });
+      const success = await storage.deleteWholesaleProduct(req.params.id);
+      if (success) {
+        res.json({ message: "Product deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Product not found" });
       }
-      res.json({ message: "Product deleted successfully" });
     } catch (error) {
-      console.error("Error deleting wholesale product:", error);
-      res.status(500).json({ message: "Failed to delete product" });
+      console.error('Delete product error:', error);
+      res.status(400).json({ message: "Failed to delete product" });
     }
   });
 
+  // Distributor orders (vendor orders to distributor)
   app.get("/api/distributor/orders", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const orders = await storage.getBulkOrdersByDistributorId(req.user!.uid);
+      const orders = await storage.getVendorOrdersByDistributorId(req.user!.uid);
       res.json(orders);
     } catch (error) {
-      console.error("Error fetching bulk orders:", error);
+      console.error('Get distributor orders error:', error);
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
 
-  app.put("/api/distributor/orders/:id/status", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { status } = req.body;
-      const updatedOrder = await storage.updateBulkOrderStatus(id, status);
-      if (!updatedOrder) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-      res.json(updatedOrder);
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      res.status(500).json({ message: "Failed to update order status" });
-    }
-  });
-
+  // Distributor deliveries
   app.get("/api/distributor/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const deliveries = await storage.getShopDeliveriesByDistributorId(req.user!.uid);
+      const deliveries = await storage.getAvailableDeliveryAssignments();
       res.json(deliveries);
     } catch (error) {
-      console.error("Error fetching shop deliveries:", error);
+      console.error('Get deliveries error:', error);
       res.status(500).json({ message: "Failed to fetch deliveries" });
     }
   });
 
-  app.post("/api/distributor/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const deliveryData = { ...req.body, distributorId: req.user!.uid };
-      const delivery = await storage.createShopDelivery(deliveryData);
-      res.status(201).json(delivery);
-    } catch (error) {
-      console.error("Error creating shop delivery:", error);
-      res.status(500).json({ message: "Failed to create delivery" });
-    }
-  });
-
-  app.put("/api/distributor/deliveries/:id/status", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { status } = req.body;
-      const updatedDelivery = await storage.updateShopDeliveryStatus(id, status);
-      if (!updatedDelivery) {
-        return res.status(404).json({ message: "Delivery not found" });
-      }
-      res.json(updatedDelivery);
-    } catch (error) {
-      console.error("Error updating delivery status:", error);
-      res.status(500).json({ message: "Failed to update delivery status" });
-    }
-  });
-
-  // Browse all wholesale products (for shop owners)
-  app.get("/api/wholesale/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+  // Street vendor routes
+  app.get("/api/vendor/products", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const products = await storage.getAllWholesaleProducts();
       res.json(products);
     } catch (error) {
-      console.error("Error fetching all wholesale products:", error);
+      console.error('Get vendor products error:', error);
       res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.get("/api/vendor/orders", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const orders = await storage.getVendorOrdersByVendorId(req.user!.uid);
+      res.json(orders);
+    } catch (error) {
+      console.error('Get vendor orders error:', error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Delivery agent routes
+  app.get("/api/agent/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const deliveries = await storage.getAvailableDeliveryAssignments();
+      res.json(deliveries);
+    } catch (error) {
+      console.error('Get agent deliveries error:', error);
+      res.status(500).json({ message: "Failed to fetch deliveries" });
+    }
+  });
+
+  app.get("/api/agent/my-deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const deliveries = await storage.getDeliveryAssignmentsByAgentId(req.user!.uid);
+      res.json(deliveries);
+    } catch (error) {
+      console.error('Get agent assigned deliveries error:', error);
+      res.status(500).json({ message: "Failed to fetch assigned deliveries" });
+    }
+  });
+
+  app.post("/api/agent/accept-delivery/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const assignment = await storage.acceptDeliveryAssignment(req.params.id, req.user!.uid);
+      res.json(assignment);
+    } catch (error) {
+      console.error('Accept delivery error:', error);
+      res.status(400).json({ message: "Failed to accept delivery" });
     }
   });
 
