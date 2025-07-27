@@ -5,6 +5,8 @@ import {
   type InsertWholesaleProduct,
   type VendorOrder,
   type InsertVendorOrder,
+  type VendorOrderItem,
+  type InsertVendorOrderItem,
   type DeliveryAssignment,
   type InsertDeliveryAssignment,
   users,
@@ -36,8 +38,9 @@ export interface IStorage {
   // Street vendor methods (orders)
   getVendorOrdersByVendorId(firebaseUid: string): Promise<VendorOrder[]>;
   getVendorOrdersByDistributorId(firebaseUid: string): Promise<VendorOrder[]>;
-  createVendorOrder(order: InsertVendorOrder): Promise<VendorOrder>;
+  createVendorOrder(order: InsertVendorOrder, items: InsertVendorOrderItem[]): Promise<VendorOrder>;
   updateVendorOrderStatus(orderId: string, status: string): Promise<VendorOrder>;
+  getVendorOrderItems(orderId: string): Promise<VendorOrderItem[]>;
   
   // Delivery agent methods
   getAvailableDeliveryAssignments(): Promise<DeliveryAssignment[]>;
@@ -125,9 +128,23 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(vendorOrders).where(eq(vendorOrders.distributorId, user.id));
   }
 
-  async createVendorOrder(order: InsertVendorOrder): Promise<VendorOrder> {
+  async createVendorOrder(order: InsertVendorOrder, items: InsertVendorOrderItem[]): Promise<VendorOrder> {
     const [newOrder] = await db.insert(vendorOrders).values(order).returning();
+    
+    // Insert order items
+    if (items.length > 0) {
+      const orderItemsWithOrderId = items.map(item => ({
+        ...item,
+        orderId: newOrder.id
+      }));
+      await db.insert(vendorOrderItems).values(orderItemsWithOrderId);
+    }
+    
     return newOrder;
+  }
+
+  async getVendorOrderItems(orderId: string): Promise<VendorOrderItem[]> {
+    return await db.select().from(vendorOrderItems).where(eq(vendorOrderItems.orderId, orderId));
   }
 
   async updateVendorOrderStatus(orderId: string, status: string): Promise<VendorOrder> {

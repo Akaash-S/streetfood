@@ -90,6 +90,10 @@ export const insertVendorOrderSchema = createInsertSchema(vendorOrders).omit({
   updatedAt: true,
 });
 
+export const insertVendorOrderItemSchema = createInsertSchema(vendorOrderItems).omit({
+  id: true,
+});
+
 export const insertDeliveryAssignmentSchema = createInsertSchema(deliveryAssignments).omit({
   id: true,
   createdAt: true,
@@ -103,5 +107,7 @@ export type InsertWholesaleProduct = z.infer<typeof insertWholesaleProductSchema
 export type WholesaleProduct = typeof wholesaleProducts.$inferSelect;
 export type InsertVendorOrder = z.infer<typeof insertVendorOrderSchema>;
 export type VendorOrder = typeof vendorOrders.$inferSelect;
+export type InsertVendorOrderItem = z.infer<typeof insertVendorOrderItemSchema>;
+export type VendorOrderItem = typeof vendorOrderItems.$inferSelect;
 export type InsertDeliveryAssignment = z.infer<typeof insertDeliveryAssignmentSchema>;
 export type DeliveryAssignment = typeof deliveryAssignments.$inferSelect;

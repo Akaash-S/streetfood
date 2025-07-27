@@ -187,6 +187,18 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Get order items for a specific order (for distributor to see details)
+  app.get("/api/distributor/orders/:orderId/items", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { orderId } = req.params;
+      const items = await storage.getVendorOrderItems(orderId);
+      res.json(items);
+    } catch (error) {
+      console.error('Get order items error:', error);
+      res.status(500).json({ message: "Failed to fetch order items" });
+    }
+  });
+
   // Update distributor order status  
   app.patch("/api/distributor/orders/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
@@ -337,7 +349,7 @@ export function registerRoutes(app: Express): Server {
         status: 'pending'
       };
       
-      const order = await storage.createVendorOrder(orderData);
+      const order = await storage.createVendorOrder(orderData, items || []);
       res.status(201).json(order);
     } catch (error) {
       console.error('Create vendor order error:', error);

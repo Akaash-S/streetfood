@@ -52,9 +52,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onClose, onSwitchToRegiste
       await refreshUser();
       toast({
         title: "Success",
-        description: "Logged in successfully!",
+        description: "Logged in successfully! Redirecting...",
       });
       onClose();
+      
+      // Force page refresh to trigger redirect
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error: any) {
       toast({
         title: "Error",
