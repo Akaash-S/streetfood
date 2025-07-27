@@ -14,11 +14,19 @@ export function AvailableDeliveries() {
 
   const { data: availableDeliveries = [], isLoading } = useQuery({
     queryKey: ['/api/agent/available-deliveries'],
-    queryFn: () => fetch('/api/agent/available-deliveries', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('firebaseToken')}`
+    queryFn: async () => {
+      const response = await fetch('/api/agent/available-deliveries', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('firebaseToken')}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch available deliveries');
       }
-    }).then(res => res.json())
+      const data = await response.json();
+      // Ensure we always return an array
+      return Array.isArray(data) ? data : [];
+    }
   });
 
   const acceptDeliveryMutation = useMutation({
@@ -49,7 +57,10 @@ export function AvailableDeliveries() {
     );
   }
 
-  if (availableDeliveries.length === 0) {
+  // Ensure availableDeliveries is an array
+  const deliveries = Array.isArray(availableDeliveries) ? availableDeliveries : [];
+  
+  if (deliveries.length === 0) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
@@ -65,11 +76,11 @@ export function AvailableDeliveries() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Available Deliveries</h2>
-        <Badge variant="secondary">{availableDeliveries.length} Available</Badge>
+        <Badge variant="secondary">{deliveries.length} Available</Badge>
       </div>
       
       <div className="grid gap-4">
-        {availableDeliveries.map((delivery: any, index: number) => (
+        {deliveries.map((delivery: any, index: number) => (
           <motion.div
             key={delivery.id}
             initial={{ opacity: 0, y: 20 }}

@@ -250,24 +250,61 @@ export default function DistributorDashboard() {
 
 
 
+  // Form state for product creation
+  const [productForm, setProductForm] = useState({
+    name: '',
+    description: '',
+    category: '',
+    price: '',
+    stockQuantity: '',
+    unit: '',
+    minimumOrderQuantity: ''
+  });
+
   const handleProductSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
     const data = {
-      name: formData.get('name') as string,
-      description: formData.get('description') as string,
-      category: formData.get('category') as string,
-      price: parseFloat(formData.get('price') as string),
-      stockQuantity: parseInt(formData.get('stockQuantity') as string),
-      unit: formData.get('unit') as string,
-      minimumOrderQuantity: parseInt(formData.get('minimumOrderQuantity') as string),
+      name: productForm.name,
+      description: productForm.description,
+      category: productForm.category,
+      price: parseFloat(productForm.price),
+      stockQuantity: parseInt(productForm.stockQuantity),
+      unit: productForm.unit,
+      minimumOrderQuantity: parseInt(productForm.minimumOrderQuantity),
       isActive: true
     };
+
+    // Basic validation
+    if (!data.name || !data.category || !data.price || !data.stockQuantity || !data.unit || !data.minimumOrderQuantity) {
+      toast({ 
+        title: "Error", 
+        description: "Please fill in all required fields", 
+        variant: "destructive" 
+      });
+      return;
+    }
 
     if (editingProduct) {
       updateProductMutation.mutate({ id: editingProduct.id, data });
     } else {
       createProductMutation.mutate(data);
+    }
+  };
+
+  // Reset form when dialog closes
+  const handleDialogClose = (open: boolean) => {
+    setIsAddProductOpen(open);
+    if (!open) {
+      setProductForm({
+        name: '',
+        description: '',
+        category: '',
+        price: '',
+        stockQuantity: '',
+        unit: '',
+        minimumOrderQuantity: ''
+      });
+      setEditingProduct(null);
     }
   };
 
@@ -511,7 +548,7 @@ export default function DistributorDashboard() {
                 <p className="text-gray-600 dark:text-gray-400">Manage your wholesale product catalog</p>
               </div>
               <div className="flex gap-3">
-                <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+                <Dialog open={isAddProductOpen} onOpenChange={handleDialogClose}>
                   <DialogTrigger asChild>
                     <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
                       <Plus className="h-4 w-4 mr-2" />
@@ -525,15 +562,28 @@ export default function DistributorDashboard() {
                   <form onSubmit={handleProductSubmit} className="space-y-4">
                     <div>
                       <Label htmlFor="name">Product Name</Label>
-                      <Input id="name" name="name" required />
+                      <Input 
+                        id="name" 
+                        value={productForm.name}
+                        onChange={(e) => setProductForm(prev => ({ ...prev, name: e.target.value }))}
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="description">Description</Label>
-                      <Textarea id="description" name="description" />
+                      <Textarea 
+                        id="description" 
+                        value={productForm.description}
+                        onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="category">Category</Label>
-                      <Select name="category" required>
+                      <Select 
+                        value={productForm.category} 
+                        onValueChange={(value) => setProductForm(prev => ({ ...prev, category: value }))}
+                        required
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
@@ -550,21 +600,46 @@ export default function DistributorDashboard() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="price">Price ($)</Label>
-                        <Input id="price" name="price" type="number" step="0.01" required />
+                        <Input 
+                          id="price" 
+                          type="number" 
+                          step="0.01" 
+                          value={productForm.price}
+                          onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))}
+                          required 
+                        />
                       </div>
                       <div>
                         <Label htmlFor="stockQuantity">Stock Quantity</Label>
-                        <Input id="stockQuantity" name="stockQuantity" type="number" required />
+                        <Input 
+                          id="stockQuantity" 
+                          type="number" 
+                          value={productForm.stockQuantity}
+                          onChange={(e) => setProductForm(prev => ({ ...prev, stockQuantity: e.target.value }))}
+                          required 
+                        />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="unit">Unit</Label>
-                        <Input id="unit" name="unit" placeholder="kg, bags, boxes" required />
+                        <Input 
+                          id="unit" 
+                          placeholder="kg, bags, boxes" 
+                          value={productForm.unit}
+                          onChange={(e) => setProductForm(prev => ({ ...prev, unit: e.target.value }))}
+                          required 
+                        />
                       </div>
                       <div>
                         <Label htmlFor="minimumOrderQuantity">Min Order Qty</Label>
-                        <Input id="minimumOrderQuantity" name="minimumOrderQuantity" type="number" required />
+                        <Input 
+                          id="minimumOrderQuantity" 
+                          type="number" 
+                          value={productForm.minimumOrderQuantity}
+                          onChange={(e) => setProductForm(prev => ({ ...prev, minimumOrderQuantity: e.target.value }))}
+                          required 
+                        />
                       </div>
                     </div>
                     <Button type="submit" className="w-full" disabled={createProductMutation.isPending}>
