@@ -14,7 +14,7 @@ import {
   deliveryAssignments
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql, inArray } from "drizzle-orm";
 
 // Updated interface for simplified three-role system
 export interface IStorage {
@@ -40,7 +40,9 @@ export interface IStorage {
   // Delivery agent methods
   getAvailableDeliveryAssignments(): Promise<DeliveryAssignment[]>;
   getDeliveryAssignmentsByAgentId(firebaseUid: string): Promise<DeliveryAssignment[]>;
+  getDeliveryAssignmentsByDistributorId(firebaseUid: string): Promise<DeliveryAssignment[]>;
   createDeliveryAssignment(assignment: InsertDeliveryAssignment): Promise<DeliveryAssignment>;
+  createDeliveryAssignmentForOrder(orderId: string, distributorFirebaseUid: string): Promise<DeliveryAssignment>;
   acceptDeliveryAssignment(assignmentId: string, agentFirebaseUid: string): Promise<DeliveryAssignment>;
   updateDeliveryAssignmentStatus(assignmentId: string, status: string): Promise<DeliveryAssignment>;
 }
@@ -154,6 +156,44 @@ export class DatabaseStorage implements IStorage {
   async updateDeliveryAssignmentStatus(assignmentId: string, status: string): Promise<DeliveryAssignment> {
     const [updatedAssignment] = await db.update(deliveryAssignments).set({ status }).where(eq(deliveryAssignments.id, assignmentId)).returning();
     return updatedAssignment;
+  }
+
+  // Distributor-specific delivery methods
+  async getDeliveryAssignmentsByDistributorId(firebaseUid: string): Promise<DeliveryAssignment[]> {
+    const user = await this.getUserByFirebaseUid(firebaseUid);
+    if (!user) return [];
+    
+    // Get all delivery assignments for orders placed with this distributor
+    const distributorOrders = await db.select().from(vendorOrders).where(eq(vendorOrders.distributorId, user.id));
+    const orderIds = distributorOrders.map(order => order.id);
+    
+    if (orderIds.length === 0) return [];
+    
+    return await db.select().from(deliveryAssignments).where(
+      inArray(deliveryAssignments.orderId, orderIds)
+    );
+  }
+
+  async createDeliveryAssignmentForOrder(orderId: string, distributorFirebaseUid: string): Promise<DeliveryAssignment> {
+    const distributor = await this.getUserByFirebaseUid(distributorFirebaseUid);
+    if (!distributor) throw new Error('Distributor not found');
+    
+    // Get the order details
+    const [order] = await db.select().from(vendorOrders).where(eq(vendorOrders.id, orderId));
+    if (!order) throw new Error('Order not found');
+    
+    // Create delivery assignment
+    const assignmentData = {
+      orderId: orderId,
+      pickupAddress: distributor.companyName || 'Distributor Warehouse',
+      deliveryAddress: order.deliveryAddress,
+      status: 'available',
+      estimatedDeliveryDate: order.estimatedDeliveryDate || null,
+      deliveryFee: '50.00', // Default delivery fee
+    };
+    
+    const [newAssignment] = await db.insert(deliveryAssignments).values([assignmentData]).returning();
+    return newAssignment;
   }
 }
 

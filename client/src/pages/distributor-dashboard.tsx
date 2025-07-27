@@ -158,11 +158,12 @@ export default function DistributorDashboard() {
     }
   });
 
+  // Order and delivery management mutations
   const updateOrderStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
-      const response = await fetch(`/api/distributor/orders/${id}/status`, {
-        method: 'PUT',
+      const response = await fetch(`/api/distributor/orders/${id}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -179,7 +180,8 @@ export default function DistributorDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/distributor/orders'] });
-      toast({ title: "Order status updated!" });
+      queryClient.invalidateQueries({ queryKey: ['/api/distributor/deliveries'] });
+      toast({ title: "Order status updated successfully!" });
     },
     onError: (error: any) => {
       console.error('Update order status error:', error);
@@ -187,11 +189,41 @@ export default function DistributorDashboard() {
     }
   });
 
-  const updateDeliveryStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
+  const createDeliveryMutation = useMutation({
+    mutationFn: async (deliveryData: { orderId: string }) => {
       const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
-      const response = await fetch(`/api/distributor/deliveries/${id}/status`, {
-        method: 'PUT',
+      const response = await fetch('/api/distributor/deliveries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(deliveryData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create delivery assignment');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/distributor/deliveries'] });
+      setIsAddDeliveryOpen(false);
+      toast({ title: "Delivery assignment created successfully!" });
+    },
+    onError: (error: any) => {
+      console.error('Create delivery error:', error);
+      toast({ title: error.message || "Failed to create delivery assignment", variant: "destructive" });
+    }
+  });
+
+  const updateDeliveryStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
+      const response = await fetch(`/api/distributor/deliveries/${id}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -208,13 +240,15 @@ export default function DistributorDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/distributor/deliveries'] });
-      toast({ title: "Delivery status updated!" });
+      toast({ title: "Delivery status updated successfully!" });
     },
     onError: (error: any) => {
       console.error('Update delivery status error:', error);
       toast({ title: error.message || "Failed to update delivery status", variant: "destructive" });
     }
   });
+
+
 
   const handleProductSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -237,22 +271,7 @@ export default function DistributorDashboard() {
     }
   };
 
-  const handleDeliverySubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    
-    const selectedOrder = bulkOrders.find(order => order.id === formData.get('orderId'));
-    
-    const data = {
-      orderId: formData.get('orderId') as string,
-      shopId: selectedOrder?.shopId || '',
-      vehicleNumber: formData.get('vehicleNumber') as string,
-      scheduledDate: new Date(formData.get('scheduledDate') as string),
-      status: 'scheduled'
-    };
 
-    createDeliveryMutation.mutate(data);
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -281,36 +300,25 @@ export default function DistributorDashboard() {
     return deliveryStatusFilter === "all" || delivery.status === deliveryStatusFilter;
   });
 
-  // Create delivery mutation
-  const createDeliveryMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const token = await (dbUser as any)?.getIdToken?.() || 'test-token';
-      const response = await fetch('/api/distributor/deliveries', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
+  // Form handlers
+  const handleDeliverySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const orderId = formData.get('orderId') as string;
+    
+    if (!orderId) {
+      toast({
+        title: "Error",
+        description: "Please select an order to schedule delivery",
+        variant: "destructive"
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create delivery');
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/distributor/deliveries'] });
-      setIsAddDeliveryOpen(false);
-      toast({ title: "Delivery scheduled successfully!" });
-    },
-    onError: (error: any) => {
-      console.error('Create delivery error:', error);
-      toast({ title: error.message || "Failed to schedule delivery", variant: "destructive" });
+      return;
     }
-  });
+    
+    createDeliveryMutation.mutate({ orderId });
+  };
+
+
 
   const stats = [
     {

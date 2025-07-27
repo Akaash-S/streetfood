@@ -187,14 +187,83 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Update distributor order status  
+  app.patch("/api/distributor/orders/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user || user.role !== 'distributor') {
+        return res.status(403).json({ message: "Access denied. Distributor role required." });
+      }
+
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const order = await storage.updateVendorOrderStatus(id, status);
+      
+      // Auto-create delivery assignment when order is shipped
+      if (status === 'shipped') {
+        try {
+          await storage.createDeliveryAssignmentForOrder(id, req.user!.uid);
+        } catch (deliveryError) {
+          console.log('Delivery assignment already exists or failed to create:', deliveryError);
+        }
+      }
+      
+      res.json(order);
+    } catch (error) {
+      console.error('Update order status error:', error);
+      res.status(400).json({ message: "Failed to update order status" });
+    }
+  });
+
   // Distributor deliveries
   app.get("/api/distributor/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const deliveries = await storage.getAvailableDeliveryAssignments();
+      const deliveries = await storage.getDeliveryAssignmentsByDistributorId(req.user!.uid);
       res.json(deliveries);
     } catch (error) {
       console.error('Get deliveries error:', error);
       res.status(500).json({ message: "Failed to fetch deliveries" });
+    }
+  });
+
+  // Create delivery assignment for an order
+  app.post("/api/distributor/deliveries", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user || user.role !== 'distributor') {
+        return res.status(403).json({ message: "Access denied. Distributor role required." });
+      }
+
+      const { orderId } = req.body;
+      if (!orderId) {
+        return res.status(400).json({ message: "Order ID is required" });
+      }
+
+      const delivery = await storage.createDeliveryAssignmentForOrder(orderId, req.user!.uid);
+      res.status(201).json(delivery);
+    } catch (error) {
+      console.error('Create delivery assignment error:', error);
+      res.status(400).json({ message: "Failed to create delivery assignment" });
+    }
+  });
+
+  // Update delivery assignment status
+  app.patch("/api/distributor/deliveries/:id", verifyFirebaseToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const user = await storage.getUserByFirebaseUid(req.user!.uid);
+      if (!user || user.role !== 'distributor') {
+        return res.status(403).json({ message: "Access denied. Distributor role required." });
+      }
+
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const delivery = await storage.updateDeliveryAssignmentStatus(id, status);
+      res.json(delivery);
+    } catch (error) {
+      console.error('Update delivery assignment error:', error);
+      res.status(400).json({ message: "Failed to update delivery assignment" });
     }
   });
 
