@@ -5,6 +5,12 @@
 This is a comprehensive Street Food Ecosystem Platform that connects street food vendors, retail shop owners, delivery agents, and distributors in a streamlined supply chain. The application provides role-based dashboards for each user type and facilitates order management, product browsing, and delivery coordination.
 
 ## Recent Changes
+- **2025-07-27**: ✅ **MAJOR MIGRATION**: Completely removed Supabase and implemented Neon PostgreSQL
+  - Replaced file-based storage (PersistentStorage) with DatabaseStorage using Neon PostgreSQL
+  - Migrated all data operations to use Drizzle ORM with proper database relationships
+  - Fixed foreign key relationships between users and wholesale products
+  - Successfully seeded database with sample data and verified all API endpoints
+  - Removed all Supabase references and configuration files
 - **2025-07-26**: Added company name capture in registration form for distributors
 - **2025-07-26**: Updated registration form to conditionally show company name field when distributor role is selected
 - **2025-07-26**: Enhanced distributor dashboard to prominently display company name in header
@@ -36,10 +42,11 @@ The application follows a modern full-stack architecture with clear separation b
 - **API Design**: RESTful API with proper error handling and logging middleware
 
 ### Database Architecture
+- **Database**: Neon PostgreSQL (fully migrated from Supabase)
 - **ORM**: Drizzle ORM for type-safe database operations
-- **Database**: PostgreSQL (configured for Neon Database)
-- **Migrations**: Drizzle Kit for schema management
+- **Migrations**: Drizzle Kit for schema management (`npm run db:push`)
 - **Connection**: Uses connection pooling via @neondatabase/serverless
+- **Storage**: DatabaseStorage class implementing full CRUD operations for all entities
 
 ## Key Components
 

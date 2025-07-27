@@ -323,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied. Distributor role required." });
       }
 
-      const productData = { ...req.body, distributorId: req.user!.uid };
+      const productData = { ...req.body, distributorId: user.id };
       const product = await storage.createWholesaleProduct(productData);
       res.status(201).json(product);
     } catch (error) {
