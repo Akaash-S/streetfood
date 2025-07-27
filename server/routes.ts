@@ -12,9 +12,12 @@ interface AuthenticatedRequest extends Request {
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
   try {
+    const projectId = process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
+    console.log('Initializing Firebase Admin with project ID:', projectId);
     admin.initializeApp({
-      projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+      projectId: projectId,
     });
+    console.log('Firebase Admin SDK initialized successfully');
   } catch (error) {
     console.error('Firebase Admin initialization failed:', error);
     // Continue without Firebase Admin for now
@@ -30,6 +33,7 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
     }
 
     const token = authHeader.split('Bearer ')[1];
+    console.log('Token received (first 20 chars):', token.substring(0, 20) + '...');
     
     // Development fallback - allow test-token for testing
     if (token === 'test-token') {
@@ -43,10 +47,13 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
     // Verify token with Firebase Admin SDK
     try {
       if (admin.apps.length > 0) {
+        console.log('Using Firebase Admin SDK for verification');
         const decodedToken = await admin.auth().verifyIdToken(token);
+        console.log('Successfully verified token for UID:', decodedToken.uid);
         req.user = decodedToken;
         return next();
       } else {
+        console.log('Firebase Admin not available, using fallback token decode');
         // Fallback for development: decode token payload
         try {
           const parts = token.split('.');
@@ -54,12 +61,15 @@ const verifyFirebaseToken = async (req: AuthenticatedRequest, res: Response, nex
             throw new Error('Invalid token format');
           }
           const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+          const uid = payload.user_id || payload.sub || payload.uid;
+          console.log('Decoded UID from token:', uid);
           req.user = { 
-            uid: payload.user_id || payload.sub || payload.uid,
+            uid: uid,
             email: payload.email 
           } as any;
           return next();
         } catch (decodeError) {
+          console.error('Token decode failed:', decodeError);
           return res.status(401).json({ message: 'Invalid token' });
         }
       }
